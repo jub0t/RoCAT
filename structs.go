@@ -37,5 +37,14 @@ type CatalogueItem struct {
 }
 
 type CatalogueResponse struct {
-	data []CatalogueItem
+	NextPageCursor string          `json:"nextPageCursor"`
+	Data           []CatalogueItem `json:"data"`
+}
+
+type GetClothesRequest struct {
+	Items []CatalogueItem `json:"items"`
+}
+
+type GetClothesResponse struct {
+	Data []ResponseItems `json:"data"`
 }

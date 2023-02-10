@@ -22,15 +22,21 @@ func main() {
 			fmt.Println(`Unable to get Csrf Token, please re-check your cookie`)
 			panic(err)
 		} else {
-			if catalogue, err := getCatalogue(56, 1, 10); err != nil {
+			if shirts, err := getCatalogue(56, 1, 120); err != nil {
 				fmt.Println(err)
 			} else {
-				fmt.Println(catalogue)
-				if clothes, err := getClothing([]RequestItems{}, cookie, csrf); err != nil {
-					fmt.Println(`Unable to get clothes`)
+				if clothes, err := getClothing(GetClothesRequest{
+					Items: shirts,
+				}, cookie, csrf); err != nil {
 					fmt.Println(err)
 				} else {
-					fmt.Println(clothes)
+					for i := 0; i < len(clothes); i++ {
+						cloth := clothes[i]
+
+						if cloth.Price >= 5 {
+							fmt.Println(cloth.Id, cloth.Name, cloth.Price, cloth.ProductId)
+						}
+					}
 				}
 			}
 		}

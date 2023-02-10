@@ -1,0 +1,24 @@
+{
+  "keyword": null,
+  "elasticsearchDebugInfo": {
+    "elasticsearchQuery": null,
+    "isFromCache": false,
+    "indexName": "",
+    "isTerminatedEarly": null,
+    "isForceTerminationEnabledByRequest": null
+  },
+  "previousPageCursor": null,
+  "nextPageCursor": "2_1_2b4fcb1abebe814a003361eb3481cfda",
+  "data": [
+    { "id": 607785314, "itemType": "Asset" },
+    { "id": 398633584, "itemType": "Asset" },
+    { "id": 3670737444, "itemType": "Asset" },
+    { "id": 398634295, "itemType": "Asset" },
+    { "id": 398635081, "itemType": "Asset" },
+    { "id": 144076358, "itemType": "Asset" },
+    { "id": 4047884939, "itemType": "Asset" },
+    { "id": 4047886060, "itemType": "Asset" },
+    { "id": 4047884046, "itemType": "Asset" },
+    { "id": 382538059, "itemType": "Asset" }
+  ]
+}
