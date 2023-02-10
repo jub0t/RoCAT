@@ -48,3 +48,10 @@ type GetClothesRequest struct {
 type GetClothesResponse struct {
 	Data []ResponseItems `json:"data"`
 }
+
+type AssetInfo struct {
+	Location             string `json:"location"`
+	RequestId            string `json:"requestId"`
+	IsArchived           bool   `json:"isArchived"`
+	IsCopyrightProtected bool   `json:"IsCopyrightProtected"`
+}

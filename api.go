@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
+// Get Clothing Information
 func getClothing(items GetClothesRequest, cookie string, csrf string) ([]ResponseItems, error) {
 	if body, err := json.Marshal(items); err != nil {
 		return nil, err
@@ -83,4 +85,57 @@ func getCatalogue(sub int, agg int, limit int) ([]CatalogueItem, error) {
 			}
 		}
 	}
+}
+
+// Fetch asset information
+func getAssetInfo(assetId int) {
+
+}
+
+// Get the cloth template/source
+func getTemplateLink(assetId int) (string, error) {
+	if request, err := http.NewRequest("GET", fmt.Sprintf(AssetAPI, assetId), nil); err != nil {
+		fmt.Println(err)
+	} else {
+		request.Header.Set("Content-Type", "application/json")
+
+		// Send Request
+		if response, err := http.DefaultClient.Do(request); err != nil {
+			fmt.Println(err)
+			return "", err
+		} else {
+			if body, err := ioutil.ReadAll(response.Body); err != nil {
+				return "", err
+			} else {
+				var asset AssetInfo
+
+				if err := json.Unmarshal(body, &asset); err != nil {
+					return "", err
+				} else {
+					location := asset.Location
+
+					if request, err := http.NewRequest("GET", location, nil); err != nil {
+						fmt.Println(err)
+					} else {
+						request.Header.Set("Content-Type", "application/json")
+
+						// Send Request
+						if response, err := http.DefaultClient.Do(request); err != nil {
+							fmt.Println(err)
+							return "", err
+						} else {
+							if body, err := ioutil.ReadAll(response.Body); err != nil {
+								return "", err
+							} else {
+								return fmt.Sprintf(`https://www.roblox.com/library/%v`, strings.Split(strings.Split(strings.Split(string(body), "<url>")[1], "</url>")[0], "?id=")[1]), nil
+							}
+						}
+					}
+					return "", nil
+				}
+			}
+		}
+	}
+
+	return "", nil
 }

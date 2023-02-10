@@ -1,18 +1,28 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 )
 
 // Global Variables
 const (
+	AssetAPI          = `https://assetdelivery.roblox.com/v1/assetId/%v`
 	CatalogueBatchAPI = "https://catalog.roblox.com/v1/catalog/items/details"
-	GetCatalogueAPI   = `https://catalog.roblox.com/v1/search/items?category=Clothing&limit=%v&salesTypeFilter=1&sortAggregation=%v&sortType=2&subcategory=%v`
+	GetCatalogueAPI   = `https://catalog.roblox.com/v1/search/items?category=Clothing&pxMin=5&limit=%v&salesTypeFilter=1&sortAggregation=%v&sortType=2&subcategory=%v`
 )
 
 // Main Function
 func main() {
+	if _, err := os.Stat("./downloads"); err == nil {
+
+	} else if errors.Is(err, os.ErrNotExist) {
+		os.MkdirAll("./downloads", os.ModePerm)
+	} else {
+		os.MkdirAll("./downloads", os.ModePerm)
+	}
+
 	if cookie_file, err := os.ReadFile("cookie.txt"); err != nil {
 		fmt.Println(`Unable to get cookie, please make sure you have a 'cookie.txt' file.`)
 		panic(err)
@@ -34,8 +44,18 @@ func main() {
 						cloth := clothes[i]
 
 						if cloth.Price >= 5 {
-							fmt.Println(cloth.Id, cloth.Name, cloth.Price, cloth.ProductId)
+							fmt.Println(cloth.Id, cloth.ProductId, cloth.Price, cloth.Name)
+						} else {
+							fmt.Println("Price is less than 5 for:", cloth.Name)
 						}
+					}
+
+					test := clothes[0]
+
+					if template, err := getTemplateLink(test.Id); err != nil {
+						fmt.Println(err)
+					} else {
+						fmt.Println(template)
 					}
 				}
 			}
