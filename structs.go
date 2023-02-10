@@ -35,3 +35,7 @@ type CatalogueItem struct {
 	Id       int    `json:"id"`
 	ItemType string `json:"itemType"`
 }
+
+type CatalogueResponse struct {
+	data []CatalogueItem
+}

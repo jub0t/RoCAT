@@ -69,22 +69,34 @@ func getCSRF(cookie string) (string, error) {
 }
 
 // Get Shirt/Pants from catalogue
-func getCatalogue(sub int, agg int, limit int) (CatalogueItem, error) {
+func getCatalogue(sub int, agg int, limit int) ([]CatalogueItem, error) {
 	url := fmt.Sprintf(GetCatalogueAPI, limit, agg, sub)
 	fmt.Println(url)
 
 	if req, err := http.NewRequest("GET", url, nil); err != nil {
-		return CatalogueItem{}, err
+		return []CatalogueItem{}, err
 	} else {
 		req.Header.Set("Content-Type", "application/json")
 
 		// Send Request
 		if response, err := http.DefaultClient.Do(req); err != nil {
 			fmt.Println(err)
-			return CatalogueItem{}, err
+			return []CatalogueItem{}, err
 		} else {
-			fmt.Println(response)
-			return CatalogueItem{}, nil
+			if body, err := ioutil.ReadAll(response.Body); err != nil {
+				return []CatalogueItem{}, err
+			} else {
+				var catalogue CatalogueResponse
+
+				fmt.Println(fmt.Sprintf("%+v", string(body)))
+
+				if err := json.Unmarshal(body, &catalogue); err != nil {
+					return []CatalogueItem{}, err
+				} else {
+					fmt.Println(catalogue.data)
+					return catalogue.data, nil
+				}
+			}
 		}
 	}
 }

@@ -18,17 +18,20 @@ func main() {
 		panic(err)
 	} else {
 		cookie := string(cookie_file[:])
-
 		if csrf, err := getCSRF(cookie); err != nil {
 			fmt.Println(`Unable to get Csrf Token, please re-check your cookie`)
 			panic(err)
 		} else {
-			fmt.Println(csrf)
-			if clothes, err := getClothing([]RequestItems{}, cookie, csrf); err != nil {
-				fmt.Println(`Unable to get clothes`)
+			if catalogue, err := getCatalogue(56, 1, 10); err != nil {
 				fmt.Println(err)
 			} else {
-				fmt.Println(clothes)
+				fmt.Println(catalogue)
+				if clothes, err := getClothing([]RequestItems{}, cookie, csrf); err != nil {
+					fmt.Println(`Unable to get clothes`)
+					fmt.Println(err)
+				} else {
+					fmt.Println(clothes)
+				}
 			}
 		}
 	}
