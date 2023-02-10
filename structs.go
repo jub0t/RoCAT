@@ -30,3 +30,8 @@ type RequestItems struct {
 	ItemType      string `json:"itemType"`
 	ThumbnailType string `json:"thumbnailType"`
 }
+
+type CatalogueItem struct {
+	Id       int    `json:"id"`
+	ItemType string `json:"itemType"`
+}
