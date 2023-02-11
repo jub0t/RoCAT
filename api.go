@@ -88,11 +88,6 @@ func getCatalogue(sub int, agg int, limit int) ([]CatalogueItem, error) {
 	}
 }
 
-// Fetch asset information
-func getAssetInfo(assetId int) {
-
-}
-
 // Get the cloth template/source
 func getTemplateLink(assetId int) (string, error) {
 	if request, err := http.NewRequest("GET", fmt.Sprintf(AssetAPI, assetId), nil); err != nil {
@@ -145,7 +140,6 @@ func getTemplateLink(assetId int) (string, error) {
 // Split from: <div id="current-animation-name"></div>
 // Then from: <div class="equipped-marker"></div>
 func downloadTemplate(link string, path string) error {
-	fmt.Println(path)
 	if req, err := http.NewRequest("GET", link, nil); err != nil {
 		return err
 	} else {
@@ -158,7 +152,6 @@ func downloadTemplate(link string, path string) error {
 				return err
 			} else {
 				template := strings.Replace(strings.Split(strings.Split(strings.Split(strings.Split(string(body), `<div id="current-animation-name"></div>`)[1], `<div class="equipped-marker"></div>`)[0], "src=")[1], "'/>")[0], "'", ``, 1)
-				fmt.Println(template)
 
 				if req, err := http.NewRequest("GET", template, nil); err != nil {
 					return err
@@ -171,11 +164,10 @@ func downloadTemplate(link string, path string) error {
 						if body, err := ioutil.ReadAll(response.Body); err != nil {
 							return err
 						} else {
-							fmt.Println(body)
 							if err := os.WriteFile(path, body, os.ModePerm); err != nil {
 								fmt.Println(err)
 							} else {
-								fmt.Println(`Template Written to Disk`)
+								return nil
 							}
 						}
 					}

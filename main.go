@@ -55,11 +55,11 @@ func main() {
 					if template, err := getTemplateLink(test.Id); err != nil {
 						fmt.Println(err)
 					} else {
-						fmt.Println(template)
-						if err := downloadTemplate(template, fmt.Sprintf(`./downloads/%v.png`, test.Id)); err != nil {
+						path := fmt.Sprintf(`./downloads/%v.png`, test.Id)
+						if err := downloadTemplate(template, path); err != nil {
 							fmt.Println(err)
 						} else {
-							fmt.Println(err)
+							fmt.Println(fmt.Sprintf(`Template %s Written To %v`, path, test.Id))
 						}
 					}
 				}
