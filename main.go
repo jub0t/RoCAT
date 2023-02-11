@@ -1,17 +1,16 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/urfave/cli/v2"
 )
 
 // Global Variables
 const (
-	TargetGroup       = 7830839
 	AssetAPI          = `https://assetdelivery.roblox.com/v1/assetId/%v`
 	CatalogueBatchAPI = "https://catalog.roblox.com/v1/catalog/items/details"
 	GetCatalogueAPI   = `https://catalog.roblox.com/v1/search/items?category=Clothing&limit=%v&salesTypeFilter=1&sortAggregation=%v&sortType=2&subcategory=%v&minPrice=5`
@@ -19,12 +18,7 @@ const (
 
 // Main Function
 func main() {
-	if _, err := os.Stat("./downloads"); err == nil {
-	} else if errors.Is(err, os.ErrNotExist) {
-		os.MkdirAll("./downloads", os.ModePerm)
-	} else {
-		os.MkdirAll("./downloads", os.ModePerm)
-	}
+	initDirs([]string{"./downloads", "./store"})
 
 	if cookie_file, err := os.ReadFile("cookie.txt"); err != nil {
 		fmt.Println(`Unable to get cookie, please make sure you have a 'cookie.txt' file.`)
@@ -37,25 +31,34 @@ func main() {
 			Usage: "Roblox clothing automation tool.",
 			Commands: []*cli.Command{
 				{
+					Name:    "download",
+					Aliases: []string{"dw"},
+					Usage:   "Download classic clothing from roblox catalogue and save them for later upload",
 					Flags: []cli.Flag{
 						&cli.StringFlag{
 							Name:    "type",
 							Aliases: []string{"t"},
 							Usage:   "Clothing type, shirts/pants.",
 						},
+						&cli.IntFlag{
+							Name:    "amount",
+							Aliases: []string{"a"},
+							Usage:   "Number of clothing templates to download, allowed: 10, 28 & 120",
+						},
 					},
-					Name:    "download",
-					Aliases: []string{"dw"},
-					Usage:   "Download classic clothing from roblox catalogue and save them for later upload",
 					Action: func(cCtx *cli.Context) error {
-						fmt.Println(cCtx.App.Flags)
-						fmt.Println(cCtx.Args())
+						amount, err := strconv.ParseInt(cCtx.String("amount"), 0, 16)
+
+						if err != nil {
+							fmt.Println("Please enter a valid clothing limit using the `--limit` flag")
+							return nil
+						}
 
 						if csrf, err := getCSRF(cookie); err != nil {
 							fmt.Println(`Unable to get Csrf Token, please re-check your cookie`)
 							panic(err)
 						} else {
-							if shirts, err := getCatalogue(56, 1, 10); err != nil {
+							if shirts, err := getCatalogue(56, 1, int(amount)); err != nil {
 								fmt.Println(err)
 							} else {
 								if clothes, err := getClothing(GetClothesRequest{
@@ -85,6 +88,43 @@ func main() {
 								}
 							}
 						}
+
+						return nil
+					},
+				},
+				{
+					Name:    "start",
+					Aliases: []string{"st"},
+					Usage:   "Start uploading the stored clothing.",
+					Flags: []cli.Flag{
+						&cli.IntFlag{
+							Name:    "groupId",
+							Aliases: []string{"gid"},
+							Usage:   "Id of the group you want the clothes to upload to.",
+						},
+						&cli.IntFlag{
+							Name:    "limit",
+							Aliases: []string{"l"},
+							Usage:   "Maximum amount of clothing you want to upload.",
+						},
+					},
+					Action: func(cCtx *cli.Context) error {
+						size, err := strconv.ParseInt(cCtx.String("limit"), 0, 16)
+
+						if err != nil {
+							fmt.Println("Please enter a valid clothing limit using the `--limit` flag")
+							return nil
+						}
+
+						group_id, err := strconv.ParseInt(cCtx.String("groupId"), 0, 16)
+
+						if err != nil {
+							fmt.Println("Please enter a valid group Id with `--groupId` flag")
+							return nil
+						}
+
+						fmt.Println(size)
+						fmt.Println(group_id)
 
 						return nil
 					},
