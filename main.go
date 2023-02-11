@@ -69,8 +69,8 @@ func main() {
 									for i := 0; i < len(clothes); i++ {
 										cloth := clothes[i]
 
+										// Avoid re-uploading free clothes
 										if cloth.Price >= 5 {
-											fmt.Println(cloth.Id, cloth.ProductId, cloth.Price, cloth.Name)
 											if template, err := getTemplateLink(cloth.Id); err != nil {
 												fmt.Println(err)
 											} else {

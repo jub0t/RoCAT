@@ -1,3 +1,6 @@
+# Create the build folder
+mkdir ./build
+
 # Build Executable for Windows
 go build -o ./build/rocat.exe
 
