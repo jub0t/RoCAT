@@ -13,12 +13,14 @@ import (
 const (
 	AssetAPI          = `https://assetdelivery.roblox.com/v1/assetId/%v`
 	CatalogueBatchAPI = "https://catalog.roblox.com/v1/catalog/items/details"
+	UploadAPI         = `https://itemconfiguration.roblox.com/v1/avatar-assets/Shirt/upload`
 	GetCatalogueAPI   = `https://catalog.roblox.com/v1/search/items?category=Clothing&limit=%v&salesTypeFilter=1&sortAggregation=%v&sortType=2&subcategory=%v&minPrice=5`
 )
 
 // Main Function
 func main() {
 	initDirs([]string{"./downloads", "./store"})
+	initFiles([]string{"./store/record.txt"})
 
 	if cookie_file, err := os.ReadFile("cookie.txt"); err != nil {
 		fmt.Println(`Unable to get cookie, please make sure you have a 'cookie.txt' file.`)
@@ -79,7 +81,7 @@ func main() {
 													if err := downloadTemplate(template, path); err != nil {
 														fmt.Println(err)
 													} else {
-														fmt.Println(fmt.Sprintf(`Template %s Written To %v`, path, cloth.Id))
+														fmt.Println(fmt.Sprintf(`Template with Id %s Written To %v`, path, cloth.Id))
 													}
 												}
 											}
@@ -109,22 +111,30 @@ func main() {
 						},
 					},
 					Action: func(cCtx *cli.Context) error {
-						size, err := strconv.ParseInt(cCtx.String("limit"), 0, 16)
+						limit, err := strconv.ParseInt(cCtx.String("limit"), 0, 16)
 
 						if err != nil {
 							fmt.Println("Please enter a valid clothing limit using the `--limit` flag")
 							return nil
 						}
 
-						group_id, err := strconv.ParseInt(cCtx.String("groupId"), 0, 16)
+						group_id, err := strconv.ParseInt(cCtx.String("groupId"), 0, 32)
 
 						if err != nil {
 							fmt.Println("Please enter a valid group Id with `--groupId` flag")
 							return nil
 						}
 
-						fmt.Println(size)
+						fmt.Println(limit)
 						fmt.Println(group_id)
+
+						entries, err := os.ReadDir("./downloads")
+
+						if err != nil {
+							fmt.Println(err)
+						}
+
+						fmt.Println(fmt.Sprintf(`Loaded %v Clothing Templates from Storage`, len(entries)))
 
 						return nil
 					},

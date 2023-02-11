@@ -31,5 +31,5 @@ rocat download --amount 120 --type shirts
 - Uploading to catalogue
 
 ```
-rocat start --groupId=7830839 --limit 10
+rocat start --groupId 7830839 --limit 10
 ```

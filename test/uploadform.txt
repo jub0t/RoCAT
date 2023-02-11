@@ -1,0 +1,11 @@
+------WebKitFormBoundaryy6LBsivaeBwITPCB
+Content-Disposition: form-data; name="content"; filename="1210857662.png"
+Content-Type: image/png
+
+
+------WebKitFormBoundaryy6LBsivaeBwITPCB
+Content-Disposition: form-data; name="config"; filename="blob"
+Content-Type: application/json
+
+{"name":"Black Suit","description":" ","creatorTargetId":7830839,"creatorType":"Group"}
+------WebKitFormBoundaryy6LBsivaeBwITPCB--

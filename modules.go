@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"os"
 )
 
@@ -17,4 +18,20 @@ func initDirs(paths []string) {
 			os.MkdirAll(path, os.ModePerm)
 		}
 	}
+}
+
+// Create files if not exist
+func initFiles(files []string) {
+	for i := 0; i < len(files); i++ {
+		file := files[i]
+
+		if _, err := os.Stat(file); err != nil {
+			_, e := os.Create(file)
+
+			if e != nil {
+				fmt.Println(fmt.Sprintf(`Failed creating file: %v`, file))
+			}
+		}
+	}
+
 }
