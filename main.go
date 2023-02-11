@@ -8,6 +8,7 @@ import (
 
 // Global Variables
 const (
+	TargetGroup       = 7830839
 	AssetAPI          = `https://assetdelivery.roblox.com/v1/assetId/%v`
 	CatalogueBatchAPI = "https://catalog.roblox.com/v1/catalog/items/details"
 	GetCatalogueAPI   = `https://catalog.roblox.com/v1/search/items?category=Clothing&pxMin=5&limit=%v&salesTypeFilter=1&sortAggregation=%v&sortType=2&subcategory=%v`
@@ -16,7 +17,6 @@ const (
 // Main Function
 func main() {
 	if _, err := os.Stat("./downloads"); err == nil {
-
 	} else if errors.Is(err, os.ErrNotExist) {
 		os.MkdirAll("./downloads", os.ModePerm)
 	} else {
@@ -56,6 +56,11 @@ func main() {
 						fmt.Println(err)
 					} else {
 						fmt.Println(template)
+						if err := downloadTemplate(template, fmt.Sprintf(`./downloads/%v.png`, test.Id)); err != nil {
+							fmt.Println(err)
+						} else {
+							fmt.Println(err)
+						}
 					}
 				}
 			}
