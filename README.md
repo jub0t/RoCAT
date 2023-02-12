@@ -20,15 +20,13 @@ GLOBAL OPTIONS:
    --help, -h  show help
 ```
 
-- Download the templates
-
-Example:
+Use this command to bulk download classic clothing from roblox catalogue. The cli tool will create a `downloads` folder in the same directory.
 
 ```sh
 rocat download --amount 120 --type shirts
 ```
 
-- Uploading to catalogue
+Now you can upload the stored clothing to the website, the cli will keep track of the uploaded clothing, and will not re-upload clothing.
 
 ```
 rocat start --groupId 7830839 --limit 10
