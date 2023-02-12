@@ -163,9 +163,7 @@ func main() {
 								return nil
 							}
 
-							fmt.Println(limit)
 							fmt.Println(group_id)
-							fmt.Println(uploads.Data)
 
 							entries, err := os.ReadDir("./downloads")
 
@@ -176,6 +174,11 @@ func main() {
 							fmt.Println(fmt.Sprintf(`Loaded %v Clothing Templates from Storage`, len(entries)))
 
 							for i := 0; i < len(entries); i++ {
+								if i > int(limit) {
+									fmt.Println(fmt.Sprintf(`Limit(%v) reached.`, limit))
+									break
+								}
+
 								file := entries[i]
 								file_name, err := strconv.ParseInt(file.Name(), 0, 64)
 
@@ -195,9 +198,12 @@ func main() {
 									// If it's valid
 									if info.Id > 0 {
 										fmt.Println(fmt.Sprintf(`Uploading %v`, info.Name))
+										uploads.SaveRecord(info)
 									}
 								}
 							}
+
+							fmt.Println(fmt.Sprintf(`Successful uploaded %v clothes.`, min(int(limit), len(entries))))
 						}
 
 						return nil

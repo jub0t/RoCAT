@@ -77,3 +77,10 @@ func cleanTemplates(files []string, records []Record) []Record {
 
 	return c
 }
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
