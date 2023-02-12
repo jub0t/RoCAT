@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+	"net/textproto"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -252,8 +253,27 @@ func uploadTemplate(cookie string, csrf string, name string, location int, price
 	writer := multipart.NewWriter(body)
 	writer.SetBoundary(randomBoundary())
 
+	json_body := textproto.MIMEHeader{}
+	json_body.Set("Content-Type", "application/json")
+	json_body.Set("Content-Disposition", `form-data; name="config"; filename="blob"`)
+
+	config, _ := writer.CreatePart(json_body)
+
+	bytes, err := json.Marshal(UploadConfig{
+		Name: name,
+	})
+
+	config.Write(bytes)
+
+	image_body := textproto.MIMEHeader{}
+	image_body.Set("Content-Type", "image/png")
+	image_body.Set("Content-Disposition", fmt.Sprintf(`form-data; name="content"; filename="shirt.png"`))
+
 	part, _ := writer.CreateFormFile("content", filepath.Base(file.Name()))
-	config, _ := writer.CreateFormField("config")
+
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	io.Copy(part, file)
 	writer.Close()
@@ -261,9 +281,7 @@ func uploadTemplate(cookie string, csrf string, name string, location int, price
 	if req, err := http.NewRequest("POST", UploadAPI, body); err != nil {
 		return err
 	} else {
-		fmt.Println(body)
-
-		req.Header.Set("content-type", fmt.Sprintf(`multipart/mixed; boundary=%v`, writer.Boundary()))
+		req.Header.Set("content-type", fmt.Sprintf(writer.FormDataContentType()))
 		req.Header.Set("cookie", fmt.Sprintf(".ROBLOSECURITY=%v", cookie))
 		req.Header.Set("content-length", strconv.Itoa(body.Len()))
 		req.Header.Set("referer", `https://create.roblox.com/`)

@@ -74,3 +74,10 @@ type UserInfo struct {
 	IsAnyBuildersClubMember bool   `json:"IsAnyBuildersClubMember"`
 	IsPremium               bool   `json:"IsPremium"`
 }
+
+type UploadConfig struct {
+	Name            string `json:"name"`
+	Description     string `json:"description"`
+	CreatorTargetId string `json:"creatorTargetId"`
+	CreatorType     string `json:"creatorType"`
+}
