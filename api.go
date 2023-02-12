@@ -4,14 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
 	"os"
-	"path/filepath"
-	"strconv"
 	"strings"
 )
 
@@ -226,7 +223,6 @@ func getUserInfo(cookie string, csrf string) (UserInfo, error) {
 		req.Header.Set("x-csrf-token", csrf)
 
 		if response, err := http.DefaultClient.Do(req); err != nil {
-			fmt.Println("Response Error")
 			return UserInfo{}, err
 		} else {
 			if body, err := ioutil.ReadAll(response.Body); err != nil {
@@ -245,13 +241,20 @@ func getUserInfo(cookie string, csrf string) (UserInfo, error) {
 }
 
 // Upload the template to roblox
-func uploadTemplate(cookie string, csrf string, name string, location int, price int, use_seo bool) error {
+func uploadTemplate(cookie string, csrf string, name string, creator_id int, creatorType string, location int, price int, use_seo bool) error {
 	file, _ := os.Open(fmt.Sprintf(`./downloads/%v`, location))
 	defer file.Close()
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 	writer.SetBoundary(randomBoundary())
+
+	image_body := textproto.MIMEHeader{}
+	image_body.Set("Content-Type", "image/png")
+	image_body.Set("Content-Disposition", fmt.Sprintf(`form-data; name="content"; filename="shirt.png"`))
+
+	part, _ := writer.CreatePart(image_body)
+	fmt.Println(part)
 
 	json_body := textproto.MIMEHeader{}
 	json_body.Set("Content-Type", "application/json")
@@ -260,36 +263,33 @@ func uploadTemplate(cookie string, csrf string, name string, location int, price
 	config, _ := writer.CreatePart(json_body)
 
 	bytes, err := json.Marshal(UploadConfig{
-		Name: name,
+		Name:            name,
+		CreatorTargetId: creator_id,
+		CreatorType:     creatorType,
+		Description:     name,
 	})
-
-	config.Write(bytes)
-
-	image_body := textproto.MIMEHeader{}
-	image_body.Set("Content-Type", "image/png")
-	image_body.Set("Content-Disposition", fmt.Sprintf(`form-data; name="content"; filename="shirt.png"`))
-
-	part, _ := writer.CreateFormFile("content", filepath.Base(file.Name()))
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	io.Copy(part, file)
+	config.Write(bytes)
+	// io.Copy(part, file)
 	writer.Close()
 
 	if req, err := http.NewRequest("POST", UploadAPI, body); err != nil {
 		return err
 	} else {
-		req.Header.Set("content-type", fmt.Sprintf(writer.FormDataContentType()))
 		req.Header.Set("cookie", fmt.Sprintf(".ROBLOSECURITY=%v", cookie))
-		req.Header.Set("content-length", strconv.Itoa(body.Len()))
-		req.Header.Set("referer", `https://create.roblox.com/`)
-		req.Header.Set("origin", `https://create.roblox.com`)
 		req.Header.Set("x-csrf-token", csrf)
+		req.Header.Set("content-type", fmt.Sprintf(writer.FormDataContentType()))
+		// req.Header.Set("content-length", strconv.Itoa(body.Len()))
+		req.Header.Set("Referer", `https://www.roblox.com`)
+		// req.Header.Set("origin", `https://create.roblox.com`)
 
-		client := &http.Client{}
-		if response, err := client.Do(req); err != nil {
+		fmt.Println(body)
+
+		if response, err := http.DefaultClient.Do(req); err != nil {
 			return err
 		} else {
 			if body, err := ioutil.ReadAll(response.Body); err != nil {

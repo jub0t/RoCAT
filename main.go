@@ -246,7 +246,7 @@ func main() {
 										fmt.Println(fmt.Sprintf(`Uploading %v`, info.Name))
 										// Upload to roblox
 
-										if err := uploadTemplate(cookie, csrf, info.Name, info.Id, 5, seo); err != nil {
+										if err := uploadTemplate(cookie, csrf, info.Name, int(group_id), "Group", info.Id, 5, seo); err != nil {
 											fmt.Println(err)
 										} else {
 											fmt.Println(fmt.Sprintf(`Template %v (%v) Successfuly Uploaded`, info.Name, info.Id))

@@ -78,6 +78,6 @@ type UserInfo struct {
 type UploadConfig struct {
 	Name            string `json:"name"`
 	Description     string `json:"description"`
-	CreatorTargetId string `json:"creatorTargetId"`
+	CreatorTargetId int    `json:"creatorTargetId"`
 	CreatorType     string `json:"creatorType"`
 }
