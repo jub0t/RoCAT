@@ -28,8 +28,8 @@ Use this command to bulk download classic clothing from roblox catalogue. The cl
 rocat download --amount 120 --type shirts
 ```
 
-Now you can upload the stored clothing to the website, the cli will keep track of the uploaded clothing, and will not re-upload clothing.
+Now you can upload the stored clothing to the website, the cli will keep track of the uploaded clothing, and will not re-upload clothing. Use the `--seo` flag to allow the cli to generate descriptions using an algorithm, better description can lead to more sales.
 
 ```
-rocat start --groupId 7830839 --limit 10
+rocat start --groupId 7830839 --limit 10 --seo
 ```
