@@ -4,7 +4,7 @@ RoCat is a revolutionary tool designed to simplify and automate the process of u
 
 ## Usage
 
-When you the CLI tool for the first time it will create two new sub-directories, `store` and `downloads` and temp`.
+When you the CLI tool for the first time it will create two new sub-directories, `store` and `downloads` and `temp`.
 
 ```sh
 NAME:
