@@ -19,9 +19,9 @@ set GOHOSTOS=linux
 REM Build Executable for Linux
 set GOARCH=amd64
 go build -o ./build/linux-amd64/rocat-linux-amd64
-go build -o ./build/linux-amd64/rocat-windows-amd64-shrink.exe -ldflags "-s -w"
+go build -o ./build/linux-amd64/rocat-windows-amd64-shrink -ldflags "-s -w"
 
 REM Build Executable for Linux
 set GOARCH=arm
 go build -o ./build/linux-arm/rocat-linux-arm
-go build -o ./build/linux-arm/rocat-windows-arm-shrink.exe -ldflags "-s -w"
+go build -o ./build/linux-arm/rocat-windows-arm-shrink -ldflags "-s -w"
