@@ -89,7 +89,7 @@ func getCatalogue(sub int, agg int, limit int) ([]CatalogueItem, error) {
 }
 
 // Get the cloth template/source
-func getTemplateLink(assetId int) (string, error) {
+func getTemplateId(assetId int) (string, error) {
 	if request, err := http.NewRequest("GET", fmt.Sprintf(AssetAPI, assetId), nil); err != nil {
 		fmt.Println(err)
 	} else {
@@ -123,7 +123,7 @@ func getTemplateLink(assetId int) (string, error) {
 							if body, err := ioutil.ReadAll(response.Body); err != nil {
 								return "", err
 							} else {
-								return fmt.Sprintf(`https://www.roblox.com/library/%v`, strings.Split(strings.Split(strings.Split(string(body), "<url>")[1], "</url>")[0], "?id=")[1]), nil
+								return strings.Split(strings.Split(strings.Split(string(body), "<url>")[1], "</url>")[0], "?id=")[1], nil
 							}
 						}
 					}
@@ -151,7 +151,7 @@ func downloadTemplate(link string, path string) error {
 			if body, err := ioutil.ReadAll(response.Body); err != nil {
 				return err
 			} else {
-				template := strings.Replace(strings.Split(strings.Split(strings.Split(strings.Split(string(body), `<div id="current-animation-name"></div>`)[1], `<div class="equipped-marker"></div>`)[0], "src=")[1], "'/>")[0], "'", ``, 1)
+				template := resizeTemplate(strings.Replace(strings.Split(strings.Split(strings.Split(strings.Split(string(body), `<div id="current-animation-name"></div>`)[1], `<div class="equipped-marker"></div>`)[0], "src=")[1], "'/>")[0], "'", ``, 1))
 
 				if req, err := http.NewRequest("GET", template, nil); err != nil {
 					return err

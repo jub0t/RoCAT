@@ -13,6 +13,7 @@ type Storage struct {
 	Data []Record
 }
 
+// This format is used for the data in the disk
 type DatabaseStructure struct {
 	Data []Record
 }

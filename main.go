@@ -17,12 +17,6 @@ const (
 	GetCatalogueAPI   = `https://catalog.roblox.com/v1/search/items?category=Clothing&limit=%v&salesTypeFilter=1&sortAggregation=%v&sortType=2&subcategory=%v&minPrice=5`
 )
 
-// Types
-const (
-	TypeShirt = 56
-	TypePant  = 57
-)
-
 // Main Function
 func main() {
 	initDirs([]string{"./downloads", "./store"})
@@ -32,12 +26,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	storage.SaveRecord(Record{
-		Type: TypeShirt,
-		Name: "Test",
-		Id:   1,
-	})
 
 	if cookie_file, err := os.ReadFile("cookie.txt"); err != nil {
 		fmt.Println(`Unable to get cookie, please make sure you have a 'cookie.txt' file.`)
@@ -62,22 +50,27 @@ func main() {
 						&cli.IntFlag{
 							Name:    "amount",
 							Aliases: []string{"a"},
-							Usage:   "Number of clothing templates to download, allowed: 10, 28 & 120",
+							Usage:   "Number of clothing templates to download, maximum 120.",
 						},
 					},
 					Action: func(cCtx *cli.Context) error {
 						amount, err := strconv.ParseInt(cCtx.String("amount"), 0, 16)
 
+						if amount > 120 {
+							fmt.Println("Maximym '--amount' is 120")
+							return nil
+						}
+
 						if err != nil {
-							fmt.Println("Please enter a valid clothing limit using the `--limit` flag")
+							fmt.Println("Please enter a valid clothing limit using the `--limit` flag.")
 							return nil
 						}
 
 						if csrf, err := getCSRF(cookie); err != nil {
-							fmt.Println(`Unable to get Csrf Token, please re-check your cookie`)
+							fmt.Println(`Unable to get Csrf Token, please re-check your cookie.`)
 							panic(err)
 						} else {
-							if shirts, err := getCatalogue(56, 1, int(amount)); err != nil {
+							if shirts, err := getCatalogue(56, 1, 120); err != nil {
 								fmt.Println(err)
 							} else {
 								if clothes, err := getClothing(GetClothesRequest{
@@ -88,17 +81,27 @@ func main() {
 									for i := 0; i < len(clothes); i++ {
 										cloth := clothes[i]
 
+										if i >= int(amount) {
+											fmt.Println(fmt.Sprintf("Successfuly downloaded %v/%v clothing templates", amount, i))
+											break
+										}
+
 										// Avoid re-uploading free clothes
 										if cloth.Price >= 5 {
-											if template, err := getTemplateLink(cloth.Id); err != nil {
+											if templateId, err := getTemplateId(cloth.Id); err != nil {
 												fmt.Println(err)
 											} else {
 												path := fmt.Sprintf(`./downloads/%v.png`, cloth.Id)
 												if _, err := os.Stat(path); err != nil {
-													if err := downloadTemplate(template, path); err != nil {
+													if err := downloadTemplate(fmt.Sprintf(`https://www.roblox.com/library/%v`, templateId), path); err != nil {
 														fmt.Println(err)
 													} else {
-														fmt.Println(fmt.Sprintf(`Template with Id %s Written To %v`, path, cloth.Id))
+														fmt.Println(fmt.Sprintf(`Template Downloaded, AssetId: %v, TemplateId: %v, Path: %v`, cloth.Id, path, templateId))
+														storage.SaveRecord(Record{
+															Type: cloth.ItemType,
+															Name: cloth.Name,
+															Id:   cloth.Id,
+														})
 													}
 												}
 											}

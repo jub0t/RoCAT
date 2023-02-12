@@ -58,6 +58,6 @@ type AssetInfo struct {
 
 type Record struct {
 	Id   int    `json:"id"`
-	Type int    `json:"type"`
+	Type string `json:"type"`
 	Name string `json:"name"`
 }
