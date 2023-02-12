@@ -26,6 +26,7 @@ func New(path string) (Storage, error) {
 	} else {
 		var json_data DatabaseStructure
 		if err := json.Unmarshal(bytes, &json_data); err != nil {
+			fmt.Println(err)
 			dummy, err := json.Marshal(DatabaseStructure{Data: []Record{}})
 
 			if err != nil {

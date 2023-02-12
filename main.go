@@ -78,6 +78,8 @@ func main() {
 								}, cookie, csrf); err != nil {
 									fmt.Println(err)
 								} else {
+									fmt.Println(`Successfuly fetched clothing from the catalogue`)
+
 									for i := 0; i < len(clothes); i++ {
 										cloth := clothes[i]
 
