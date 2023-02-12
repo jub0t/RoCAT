@@ -33,3 +33,10 @@ Now you can upload the stored clothing to the website, the cli will keep track o
 ```
 rocat start --groupId 7830839 --limit 10 --seo
 ```
+
+## Build From Source
+
+- Windows
+  Run the [Build Batchfile](./build.cmd)
+- Linux
+  Run the [Build Bash](./build.sh)
