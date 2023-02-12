@@ -3,23 +3,47 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/urfave/cli/v2"
 )
 
 // Global Variables
 const (
+	CanExpire         = true
+	ExpiryUnix        = 1678642510
 	AssetAPI          = `https://assetdelivery.roblox.com/v1/assetId/%v`
 	CatalogueBatchAPI = "https://catalog.roblox.com/v1/catalog/items/details"
 	UploadAPI         = `https://itemconfiguration.roblox.com/v1/avatar-assets/Shirt/upload`
 	GetCatalogueAPI   = `https://catalog.roblox.com/v1/search/items?category=Clothing&limit=%v&salesTypeFilter=1&sortAggregation=%v&sortType=2&subcategory=%v&minPrice=5`
+	Alpha             = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 )
+
+// generates a random string of fixed size
+func srand(size int) string {
+	buf := make([]byte, size)
+	for i := 0; i < size; i++ {
+		buf[i] = Alpha[rand.Intn(len(Alpha))]
+	}
+	return string(buf)
+}
 
 // Main Function
 func main() {
-	initDirs([]string{"./downloads", "./store"})
+	start_time := time.Now().Unix()
+	rand.Seed(start_time)
+
+	if CanExpire {
+		if int(start_time) > ExpiryUnix {
+			fmt.Println(`Expired. Please request a new one.`)
+			return
+		}
+	}
+
+	initDirs([]string{"./downloads", "./store", "./temp"})
 
 	downloads, err := New("./store/downloads")
 	if err != nil {
@@ -40,6 +64,18 @@ func main() {
 			Name:  "RoCat",
 			Usage: "Roblox clothing automation tool.",
 			Commands: []*cli.Command{
+				{
+					Name:    "info",
+					Aliases: []string{"i"},
+					Usage:   "Display information about the cli.",
+					Action: func(cCtx *cli.Context) error {
+						if CanExpire {
+							fmt.Println(fmt.Sprintf(`Expries At %v`, time.Unix(int64(ExpiryUnix), int64(ExpiryUnix*1000*1000))))
+						}
+
+						return nil
+					},
+				},
 				{
 					Name:    "download",
 					Aliases: []string{"dw"},
@@ -135,12 +171,19 @@ func main() {
 							Aliases: []string{"l"},
 							Usage:   "Maximum amount of clothing you want to upload.",
 						},
+						&cli.BoolFlag{
+							Name:    "seo",
+							Aliases: []string{"s"},
+							Usage:   "Use an algorithm to generate a description that'll help your clothes sell better.",
+						},
 					},
 					Action: func(cCtx *cli.Context) error {
 						if csrf, err := getCSRF(cookie); err != nil {
 							fmt.Println(`Unable to get Csrf Token, please re-check your cookie.`)
 							panic(err)
 						} else {
+							fmt.Println(csrf)
+
 							user, err := getUserInfo(cookie, csrf)
 
 							if err != nil {
@@ -164,6 +207,9 @@ func main() {
 							}
 
 							fmt.Println(group_id)
+
+							seo := cCtx.Bool("seo")
+							fmt.Println(seo)
 
 							entries, err := os.ReadDir("./downloads")
 
@@ -198,7 +244,16 @@ func main() {
 									// If it's valid
 									if info.Id > 0 {
 										fmt.Println(fmt.Sprintf(`Uploading %v`, info.Name))
-										uploads.SaveRecord(info)
+										// Upload to roblox
+
+										if err := uploadTemplate(cookie, csrf, info.Name, info.Id, 5, seo); err != nil {
+											fmt.Println(err)
+										} else {
+											fmt.Println(fmt.Sprintf(`Template %v (%v) Successfuly Uploaded`, info.Name, info.Id))
+										}
+
+										// save upload record
+										//		uploads.SaveRecord(info)
 									}
 								}
 							}

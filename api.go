@@ -4,9 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -234,6 +238,48 @@ func getUserInfo(cookie string, csrf string) (UserInfo, error) {
 				} else {
 					return resp, nil
 				}
+			}
+		}
+	}
+}
+
+// Upload the template to roblox
+func uploadTemplate(cookie string, csrf string, name string, location int, price int, use_seo bool) error {
+	file, _ := os.Open(fmt.Sprintf(`./downloads/%v`, location))
+	defer file.Close()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	writer.SetBoundary(randomBoundary())
+
+	part, _ := writer.CreateFormFile("content", filepath.Base(file.Name()))
+	config, _ := writer.CreateFormField("config")
+
+	io.Copy(part, file)
+	writer.Close()
+
+	if req, err := http.NewRequest("POST", UploadAPI, body); err != nil {
+		return err
+	} else {
+		fmt.Println(body)
+
+		req.Header.Set("content-type", fmt.Sprintf(`multipart/mixed; boundary=%v`, writer.Boundary()))
+		req.Header.Set("cookie", fmt.Sprintf(".ROBLOSECURITY=%v", cookie))
+		req.Header.Set("content-length", strconv.Itoa(body.Len()))
+		req.Header.Set("referer", `https://create.roblox.com/`)
+		req.Header.Set("origin", `https://create.roblox.com`)
+		req.Header.Set("x-csrf-token", csrf)
+
+		client := &http.Client{}
+		if response, err := client.Do(req); err != nil {
+			return err
+		} else {
+			if body, err := ioutil.ReadAll(response.Body); err != nil {
+				return err
+			} else {
+				fmt.Println(string(body))
+
+				return nil
 			}
 		}
 	}

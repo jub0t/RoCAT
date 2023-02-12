@@ -78,9 +78,27 @@ func cleanTemplates(files []string, records []Record) []Record {
 	return c
 }
 
+// Get smallest between 2 integers
 func min(a, b int) int {
 	if a < b {
 		return a
 	}
 	return b
+}
+
+// Generate description from name, max length 999
+func generateDesc(name string) []string {
+	var final []string
+	tokens := strings.Split(name, " ")
+
+	for i := 0; i < len(tokens); i++ {
+
+	}
+
+	return final
+}
+
+// Generate random boundary
+func randomBoundary() string {
+	return fmt.Sprintf(`WebKitFormBoundary%v`, srand(16))
 }
