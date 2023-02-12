@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
@@ -273,8 +274,8 @@ func uploadTemplate(cookie string, csrf string, name string, creator_id int, cre
 		fmt.Println(err)
 	}
 
+	io.Copy(part, file)
 	config.Write(bytes)
-	// io.Copy(part, file)
 	writer.Close()
 
 	if req, err := http.NewRequest("POST", UploadAPI, body); err != nil {
