@@ -17,10 +17,27 @@ const (
 	GetCatalogueAPI   = `https://catalog.roblox.com/v1/search/items?category=Clothing&limit=%v&salesTypeFilter=1&sortAggregation=%v&sortType=2&subcategory=%v&minPrice=5`
 )
 
+// Types
+const (
+	TypeShirt = 56
+	TypePant  = 57
+)
+
 // Main Function
 func main() {
 	initDirs([]string{"./downloads", "./store"})
-	initFiles([]string{"./store/record.txt"})
+	initFiles([]string{"./store/database"})
+
+	storage, err := New("./store/database")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	storage.SaveRecord(Record{
+		Type: TypeShirt,
+		Name: "Test",
+		Id:   1,
+	})
 
 	if cookie_file, err := os.ReadFile("cookie.txt"); err != nil {
 		fmt.Println(`Unable to get cookie, please make sure you have a 'cookie.txt' file.`)

@@ -55,3 +55,9 @@ type AssetInfo struct {
 	IsArchived           bool   `json:"isArchived"`
 	IsCopyrightProtected bool   `json:"IsCopyrightProtected"`
 }
+
+type Record struct {
+	Id   int    `json:"id"`
+	Type int    `json:"type"`
+	Name string `json:"name"`
+}
