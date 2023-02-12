@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
 )
 
 // Storage Data
@@ -19,27 +18,35 @@ type DatabaseStructure struct {
 }
 
 func New(path string) (Storage, error) {
+	dummy, _ := json.Marshal(DatabaseStructure{Data: []Record{}})
+
 	if bytes, err := os.ReadFile(path); err != nil {
-		// Failed to read file
-		initFiles([]string{path})
-		return Storage{}, err
+		if err := os.WriteFile(path, []byte(dummy), os.ModePerm); err != nil {
+			fmt.Println(err)
+			return Storage{
+				Path: path,
+				Data: []Record{},
+			}, err
+		} else {
+			return Storage{
+				Path: path,
+				Data: []Record{},
+			}, nil
+		}
 	} else {
 		var json_data DatabaseStructure
 		if err := json.Unmarshal(bytes, &json_data); err != nil {
-			fmt.Println(err)
-			dummy, err := json.Marshal(DatabaseStructure{Data: []Record{}})
-
-			if err != nil {
-				fmt.Println("Unable to marshal dummy json data")
-				return Storage{}, err
-			}
-
 			if err := os.WriteFile(path, []byte(dummy), os.ModePerm); err != nil {
 				fmt.Println(err)
-				return Storage{}, err
+				return Storage{
+					Path: path,
+					Data: []Record{},
+				}, err
 			} else {
-				return Storage{}, nil
-
+				return Storage{
+					Path: path,
+					Data: []Record{},
+				}, nil
 			}
 		} else {
 			return Storage{
@@ -60,7 +67,7 @@ func (x *Storage) SaveRecord(record Record) {
 }
 
 // Get all records in the database
-func (x *Storage) GetAll(record Record) []Record {
+func (x *Storage) GetAll() []Record {
 	return x.Data
 }
 
@@ -78,26 +85,21 @@ func (x *Storage) GetRecord(id int) Record {
 }
 
 // Get all records with the given name
-func (x *Storage) SearchRecord(name string) []Record {
-	var records []Record
-
+func (x *Storage) RecordExists(id int) bool {
 	for i := 0; i < len(x.Data); i++ {
-		record := x.Data[i]
-
-		if strings.ToLower(record.Name) == strings.ToLower(name) {
-			records = append(records, record)
+		if x.Data[i].Id == id {
+			return true
 		}
 	}
 
-	return records
+	return false
 }
 
 // Take the data from memory and store it into disk
 func SaveToDisk(data *Storage) error {
-	if bytes, err := json.Marshal(data.Data); err != nil {
+	if bytes, err := json.Marshal(data); err != nil {
 		return err
 	} else {
-		fmt.Println(data.Path)
 		if err := os.WriteFile(data.Path, bytes, os.ModePerm); err != nil {
 			return err
 		} else {

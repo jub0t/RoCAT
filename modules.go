@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"strings"
 )
@@ -40,4 +41,39 @@ func initFiles(files []string) {
 // The clothing size is 420, we resize it to 512 without losing quality
 func resizeTemplate(link string) string {
 	return fmt.Sprintf("https://tr.rbxcdn.com/%v/512/512/Image/Png", strings.Split(strings.Split(link, "https://tr.rbxcdn.com/")[1], "/")[0])
+}
+
+// Return only the names of fs dirs
+func entriesToNames(entries []fs.DirEntry) []string {
+	var x []string
+
+	for i := 0; i < len(entries); i++ {
+		x = append(x, entries[i].Name())
+	}
+
+	return x
+}
+
+func contains(s []string, e any) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+// Map a slice and only return clothes that have not been uploaded already.
+func cleanTemplates(files []string, records []Record) []Record {
+	var c []Record
+
+	for i := 0; i < len(records); i++ {
+		record := records[i]
+
+		if !(contains(files, record)) {
+			c = append(c, record)
+		}
+	}
+
+	return c
 }

@@ -61,3 +61,16 @@ type Record struct {
 	Type string `json:"type"`
 	Name string `json:"name"`
 }
+
+type AccountBalanceResponse struct {
+	Robux int `json:"robux"`
+}
+
+type UserInfo struct {
+	UserId                  int    `json:"UserID"`
+	UserName                string `json:"UserName"`
+	RobuxBalance            int    `json:"RobuxBalance"`
+	ThumbnailUrl            string `json:"ThumbnailUrl"`
+	IsAnyBuildersClubMember bool   `json:"IsAnyBuildersClubMember"`
+	IsPremium               bool   `json:"IsPremium"`
+}

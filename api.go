@@ -19,8 +19,8 @@ func getClothing(items GetClothesRequest, cookie string, csrf string) ([]Respons
 			fmt.Println("Request Agent Error")
 			return nil, err
 		} else {
+			req.Header.Set("cookie", fmt.Sprintf(`.ROBLOSECURITY=%v`, cookie))
 			req.Header.Set("Content-Type", "application/json")
-			req.Header.Set(".ROBLOSECURITY", cookie)
 			req.Header.Set("x-csrf-token", csrf)
 
 			if response, err := http.DefaultClient.Do(req); err != nil {
@@ -178,4 +178,63 @@ func downloadTemplate(link string, path string) error {
 	}
 
 	return nil
+}
+
+// Get User's Balance
+func getBalance(cookie string, csrf string, user_id int) (int, error) {
+	if req, err := http.NewRequest("GET", fmt.Sprintf(`https://economy.roblox.com/v1/users/%v/currency`, user_id), nil); err != nil {
+		fmt.Println("Request Agent Error")
+		return 0, err
+	} else {
+		req.Header.Set("cookie", fmt.Sprintf(`.ROBLOSECURITY=%v`, cookie))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("x-csrf-token", csrf)
+
+		if response, err := http.DefaultClient.Do(req); err != nil {
+			fmt.Println("Response Error")
+			return 0, err
+		} else {
+
+			if body, err := ioutil.ReadAll(response.Body); err != nil {
+				return 0, err
+			} else {
+				var resp AccountBalanceResponse
+
+				if err := json.Unmarshal(body, &resp); err != nil {
+					return 0, err
+				} else {
+					return resp.Robux, nil
+				}
+			}
+		}
+	}
+}
+
+// Get the user's information by cookie
+func getUserInfo(cookie string, csrf string) (UserInfo, error) {
+	if req, err := http.NewRequest("GET", `https://www.roblox.com/mobileapi/userinfo`, nil); err != nil {
+		fmt.Println("Request Agent Error")
+		return UserInfo{}, err
+	} else {
+		req.Header.Set("cookie", fmt.Sprintf(`.ROBLOSECURITY=%v`, cookie))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("x-csrf-token", csrf)
+
+		if response, err := http.DefaultClient.Do(req); err != nil {
+			fmt.Println("Response Error")
+			return UserInfo{}, err
+		} else {
+			if body, err := ioutil.ReadAll(response.Body); err != nil {
+				return UserInfo{}, err
+			} else {
+				var resp UserInfo
+
+				if err := json.Unmarshal(body, &resp); err != nil {
+					return UserInfo{}, err
+				} else {
+					return resp, nil
+				}
+			}
+		}
+	}
 }
