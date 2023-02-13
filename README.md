@@ -48,3 +48,9 @@ rocat start --groupId 7830839 --limit 10 --seo
 ## Contribution
 
 This tool is still under development and is not complete. Contributions & pull requests are appreciated.
+
+## Roadmap
+
+- [x] Bulk downloader
+- [ ] Add proxies to upload
+- [ ] Add FunCaptcha solver
