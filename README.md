@@ -24,7 +24,7 @@ GLOBAL OPTIONS:
 
 Use this command to bulk download classic clothing from roblox catalogue. The cli tool will create a `downloads` folder in the same directory.
 
-```sh
+```cmd
 rocat download --amount 120 --type shirts
 ```
 

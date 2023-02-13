@@ -78,6 +78,28 @@ func main() {
 					},
 				},
 				{
+					Name:    "whoami",
+					Aliases: []string{"wai"},
+					Usage:   "Uses your cookie from the file and fetches account/bot info.",
+					Action: func(cCtx *cli.Context) error {
+						if csrf, err := getCSRF(cookie); err != nil {
+							fmt.Println(`Unable to get Csrf Token, please re-check your cookie.`)
+							panic(err)
+						} else {
+							user, err := getUserInfo(cookie, csrf)
+							if err != nil {
+								fmt.Println(`Unable to fetch user info, please re-check your cookie.`)
+							}
+
+							if user.UserId > 0 {
+								fmt.Println(fmt.Sprintf("Username: %v\nUserId: %v\nRobux: %v\nHas Premium: %v\nHas Builders Club: %v", user.UserName, user.UserId, user.RobuxBalance, user.IsPremium, user.IsAnyBuildersClubMember))
+							}
+						}
+
+						return nil
+					},
+				},
+				{
 					Name:    "download",
 					Aliases: []string{"dw"},
 					Usage:   "Download classic clothing from roblox catalogue and save them for later upload",
@@ -183,8 +205,6 @@ func main() {
 							fmt.Println(`Unable to get Csrf Token, please re-check your cookie.`)
 							panic(err)
 						} else {
-							fmt.Println(csrf)
-
 							user, err := getUserInfo(cookie, csrf)
 
 							if err != nil {
@@ -207,11 +227,7 @@ func main() {
 								return nil
 							}
 
-							fmt.Println(group_id)
-
 							seo := cCtx.Bool("seo")
-							fmt.Println(seo)
-
 							entries, err := os.ReadDir("./downloads")
 
 							if err != nil {
@@ -254,7 +270,7 @@ func main() {
 										}
 
 										// save upload record
-										//		uploads.SaveRecord(info)
+										// uploads.SaveRecord(info)
 									}
 								}
 							}

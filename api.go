@@ -255,7 +255,6 @@ func uploadTemplate(cookie string, csrf string, name string, creator_id int, cre
 	image_body.Set("Content-Disposition", fmt.Sprintf(`form-data; name="content"; filename="shirt.png"`))
 
 	part, _ := writer.CreatePart(image_body)
-	fmt.Println(part)
 
 	json_body := textproto.MIMEHeader{}
 	json_body.Set("Content-Type", "application/json")
@@ -278,25 +277,26 @@ func uploadTemplate(cookie string, csrf string, name string, creator_id int, cre
 	config.Write(bytes)
 	writer.Close()
 
+	fmt.Println(body)
+
 	if req, err := http.NewRequest("POST", UploadAPI, body); err != nil {
 		return err
 	} else {
+		req.Header.Set("content-type", fmt.Sprintf(writer.FormDataContentType()))
 		req.Header.Set("cookie", fmt.Sprintf(".ROBLOSECURITY=%v", cookie))
 		req.Header.Set("x-csrf-token", csrf)
-		req.Header.Set("content-type", fmt.Sprintf(writer.FormDataContentType()))
-		// req.Header.Set("content-length", strconv.Itoa(body.Len()))
-		req.Header.Set("Referer", `https://www.roblox.com`)
-		// req.Header.Set("origin", `https://create.roblox.com`)
 
-		fmt.Println(body)
+		// req.Header.Set("content-length", strconv.Itoa(body.Len()))
+		// req.Header.Set("Referer", `https://www.roblox.com`)
+		// req.Header.Set("origin", `https://create.roblox.com`)
 
 		if response, err := http.DefaultClient.Do(req); err != nil {
 			return err
 		} else {
-			if body, err := ioutil.ReadAll(response.Body); err != nil {
+			if resp, err := ioutil.ReadAll(response.Body); err != nil {
 				return err
 			} else {
-				fmt.Println(string(body))
+				fmt.Println(string(resp))
 
 				return nil
 			}

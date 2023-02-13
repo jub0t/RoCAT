@@ -121,7 +121,7 @@ func generateDesc(name string) []string {
 
 // Generate random boundary
 func randomBoundary() string {
-	return fmt.Sprintf(`--WebKitFormBoundary%v`, srand(16))
+	return fmt.Sprintf(`----WebKitFormBoundary%v`, srand(16))
 }
 
 // Change order of the elements in an array
