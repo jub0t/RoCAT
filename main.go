@@ -13,8 +13,6 @@ import (
 
 // Global Variables
 const (
-	CanExpire         = true
-	ExpiryUnix        = 1678642510
 	AssetAPI          = `https://assetdelivery.roblox.com/v1/assetId/%v`
 	CatalogueBatchAPI = "https://catalog.roblox.com/v1/catalog/items/details"
 	Alpha             = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
@@ -35,13 +33,6 @@ func srand(size int) string {
 func main() {
 	start_time := time.Now().Unix()
 	rand.Seed(start_time)
-
-	if CanExpire {
-		if int(start_time) > ExpiryUnix {
-			fmt.Println(`Expired. Please request a new one.`)
-			return
-		}
-	}
 
 	initFiles([]string{"./cookie.txt"})
 	initDirs([]string{"./downloads", "./store", "./temp"})
@@ -69,10 +60,7 @@ func main() {
 					Name:  "info",
 					Usage: "Display information about the cli.",
 					Action: func(cCtx *cli.Context) error {
-						if CanExpire {
-							fmt.Println(fmt.Sprintf(`Expries At %v`, time.Unix(int64(ExpiryUnix), int64(ExpiryUnix*1000*1000))))
-						}
-
+						// Database & Downloaded info
 						return nil
 					},
 				},
