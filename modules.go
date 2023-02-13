@@ -59,6 +59,7 @@ func initFiles(files []string) {
 
 // The clothing size is 420, we resize it to 512 without losing quality
 func resizeTemplate(link string) string {
+	fmt.Println(link)
 	return fmt.Sprintf("https://tr.rbxcdn.com/%v/512/512/Image/Png", strings.Split(strings.Split(link, "https://tr.rbxcdn.com/")[1], "/")[0])
 }
 

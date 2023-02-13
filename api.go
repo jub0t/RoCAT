@@ -14,7 +14,7 @@ import (
 )
 
 // Get Clothing Information
-func getClothing(items GetClothesRequest, cookie string, csrf string) ([]ResponseItems, error) {
+func getClothing(items GetClothesRequest, cookie string) ([]ResponseItems, error) {
 	if body, err := json.Marshal(items); err != nil {
 		return nil, err
 	} else {
@@ -22,22 +22,26 @@ func getClothing(items GetClothesRequest, cookie string, csrf string) ([]Respons
 			fmt.Println("Request Agent Error")
 			return nil, err
 		} else {
-			req.Header.Set("cookie", fmt.Sprintf(`.ROBLOSECURITY=%v`, cookie))
-			req.Header.Set("Content-Type", "application/json")
-			req.Header.Set("x-csrf-token", csrf)
-
-			if response, err := http.DefaultClient.Do(req); err != nil {
-				fmt.Println("Response Error")
-				return nil, err
+			if csrf, err := getCSRF(cookie); err != nil {
+				fmt.Println(`x-csrf-token fetching failed upon getting clothing`)
+				panic(err)
 			} else {
-				if body, err := ioutil.ReadAll(response.Body); err != nil {
+				req.Header.Set("cookie", fmt.Sprintf(`.ROBLOSECURITY=%v`, cookie))
+				req.Header.Set("Content-Type", "application/json")
+				req.Header.Set("x-csrf-token", csrf)
+
+				if response, err := http.DefaultClient.Do(req); err != nil {
 					return nil, err
 				} else {
-					var catalogue GetClothesResponse
-					if err := json.Unmarshal(body, &catalogue); err != nil {
+					if body, err := ioutil.ReadAll(response.Body); err != nil {
 						return nil, err
 					} else {
-						return catalogue.Data, nil
+						var catalogue GetClothesResponse
+						if err := json.Unmarshal(body, &catalogue); err != nil {
+							return nil, err
+						} else {
+							return catalogue.Data, nil
+						}
 					}
 				}
 			}
@@ -64,27 +68,32 @@ func getCSRF(cookie string) (string, error) {
 }
 
 // Get Shirt/Pants from catalogue
-func getCatalogue(sub int, agg int, limit int) ([]CatalogueItem, error) {
-	url := fmt.Sprintf(GetCatalogueAPI, limit, agg, sub)
-	if req, err := http.NewRequest("GET", url, nil); err != nil {
+func getCatalogue(sub int, agg int, limit int, cookie string) ([]CatalogueItem, error) {
+	if req, err := http.NewRequest("GET", fmt.Sprintf(GetCatalogueAPI, limit, agg, sub), nil); err != nil {
 		return []CatalogueItem{}, err
 	} else {
-		req.Header.Set("Content-Type", "application/json")
-
-		// Send Request
-		if response, err := http.DefaultClient.Do(req); err != nil {
-			fmt.Println(err)
-			return []CatalogueItem{}, err
+		if csrf, err := getCSRF(cookie); err != nil {
+			fmt.Println(`x-csrf-token fetching failed upon getting catalogue`)
+			panic(err)
 		} else {
-			if body, err := ioutil.ReadAll(response.Body); err != nil {
+			req.Header.Set("cookie", fmt.Sprintf(`.ROBLOSECURITY=%v`, cookie))
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("x-csrf-token", csrf)
+
+			// Send Request
+			if response, err := http.DefaultClient.Do(req); err != nil {
+				fmt.Println(err)
 				return []CatalogueItem{}, err
 			} else {
-				var catalogue CatalogueResponse
-
-				if err := json.Unmarshal(body, &catalogue); err != nil {
+				if body, err := ioutil.ReadAll(response.Body); err != nil {
 					return []CatalogueItem{}, err
 				} else {
-					return catalogue.Data, nil
+					var catalogue CatalogueResponse
+					if err := json.Unmarshal(body, &catalogue); err != nil {
+						return []CatalogueItem{}, err
+					} else {
+						return catalogue.Data, nil
+					}
 				}
 			}
 		}
@@ -214,27 +223,32 @@ func getBalance(cookie string, csrf string, user_id int) (int, error) {
 }
 
 // Get the user's information by cookie
-func getUserInfo(cookie string, csrf string) (UserInfo, error) {
+func getUserInfo(cookie string) (UserInfo, error) {
 	if req, err := http.NewRequest("GET", `https://www.roblox.com/mobileapi/userinfo`, nil); err != nil {
 		fmt.Println("Request Agent Error")
 		return UserInfo{}, err
 	} else {
-		req.Header.Set("cookie", fmt.Sprintf(`.ROBLOSECURITY=%v`, cookie))
-		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("x-csrf-token", csrf)
-
-		if response, err := http.DefaultClient.Do(req); err != nil {
-			return UserInfo{}, err
+		if csrf, err := getCSRF(cookie); err != nil {
+			fmt.Println(`x-csrf-token fetching failed upon getting user info`)
+			panic(err)
 		} else {
-			if body, err := ioutil.ReadAll(response.Body); err != nil {
+			req.Header.Set("cookie", fmt.Sprintf(`.ROBLOSECURITY=%v`, cookie))
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("x-csrf-token", csrf)
+
+			if response, err := http.DefaultClient.Do(req); err != nil {
 				return UserInfo{}, err
 			} else {
-				var resp UserInfo
-
-				if err := json.Unmarshal(body, &resp); err != nil {
+				if body, err := ioutil.ReadAll(response.Body); err != nil {
 					return UserInfo{}, err
 				} else {
-					return resp, nil
+					var resp UserInfo
+
+					if err := json.Unmarshal(body, &resp); err != nil {
+						return UserInfo{}, err
+					} else {
+						return resp, nil
+					}
 				}
 			}
 		}
@@ -242,7 +256,7 @@ func getUserInfo(cookie string, csrf string) (UserInfo, error) {
 }
 
 // Upload the template to roblox
-func uploadTemplate(cookie string, csrf string, name string, creator_id int, creatorType string, location int, price int, use_seo bool) error {
+func uploadTemplate(cookie string, name string, creator_id int, creatorType string, location int, price int, use_seo bool) error {
 	file, _ := os.Open(fmt.Sprintf(`./downloads/%v`, location))
 	defer file.Close()
 
@@ -282,24 +296,30 @@ func uploadTemplate(cookie string, csrf string, name string, creator_id int, cre
 	if req, err := http.NewRequest("POST", UploadAPI, body); err != nil {
 		return err
 	} else {
-		req.Header.Set("content-type", fmt.Sprintf(writer.FormDataContentType()))
-		req.Header.Set("cookie", fmt.Sprintf(".ROBLOSECURITY=%v", cookie))
-		req.Header.Set("x-csrf-token", csrf)
-
-		// req.Header.Set("content-length", strconv.Itoa(body.Len()))
-		// req.Header.Set("Referer", `https://www.roblox.com`)
-		// req.Header.Set("origin", `https://create.roblox.com`)
-
-		if response, err := http.DefaultClient.Do(req); err != nil {
-			return err
+		if csrf, err := getCSRF(cookie); err != nil {
+			fmt.Println(`x-csrf-token fetching failed for upload`)
+			panic(err)
 		} else {
-			if resp, err := ioutil.ReadAll(response.Body); err != nil {
+			req.Header.Set("content-type", fmt.Sprintf(writer.FormDataContentType()))
+			req.Header.Set("cookie", fmt.Sprintf(".ROBLOSECURITY=%v", cookie))
+			req.Header.Set("x-csrf-token", csrf)
+
+			// req.Header.Set("content-length", strconv.Itoa(body.Len()))
+			// req.Header.Set("Referer", `https://www.roblox.com`)
+			// req.Header.Set("origin", `https://create.roblox.com`)
+
+			if response, err := http.DefaultClient.Do(req); err != nil {
 				return err
 			} else {
-				fmt.Println(string(resp))
+				if resp, err := ioutil.ReadAll(response.Body); err != nil {
+					return err
+				} else {
+					fmt.Println(string(resp))
 
-				return nil
+					return nil
+				}
 			}
 		}
+
 	}
 }
