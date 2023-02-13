@@ -6,7 +6,7 @@ RoCat is a revolutionary tool designed to simplify and automate the process of u
 
 When you run the CLI tool for the first time it will create a few new sub-directories, like `store` and `downloads` and `temp`.
 
-```sh
+```cmd
 NAME:
    RoCat - Roblox clothing automation tool.
 
@@ -24,7 +24,7 @@ GLOBAL OPTIONS:
 
 Use this command to bulk download classic clothing from roblox catalogue. The cli tool will create a `downloads` folder in the same directory.
 
-```cmd
+```sh
 rocat download --amount 120 --type shirts
 ```
 
