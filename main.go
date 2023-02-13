@@ -43,6 +43,7 @@ func main() {
 		}
 	}
 
+	initFiles([]string{"./cookie.txt"})
 	initDirs([]string{"./downloads", "./store", "./temp"})
 
 	downloads, err := New("./store/downloads")
