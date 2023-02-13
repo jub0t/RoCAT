@@ -44,3 +44,7 @@ rocat start --groupId 7830839 --limit 10 --seo
 
 - For Linux Run the [Build Bash file](./build.sh)
 - For Windows Run the [Build Batchfile](./build.cmd)
+
+## Contribution
+
+This tool is still under development and is not complete. Contributions & pull requests are appreciated.

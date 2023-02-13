@@ -20,7 +20,6 @@ type DatabaseStructure struct {
 // Create new database instance and initialize the database
 func New(path string) (Storage, error) {
 	dummy, _ := json.Marshal(DatabaseStructure{Data: []Record{}})
-
 	if bytes, err := os.ReadFile(path); err != nil {
 		if err := os.WriteFile(path, []byte(dummy), os.ModePerm); err != nil {
 			fmt.Println(err)
