@@ -31,11 +31,11 @@ func srand(size int) string {
 
 // Main Function
 func main() {
-	start_time := time.Now().Unix()
-	rand.Seed(start_time)
-
 	initFiles([]string{"./cookie.txt"})
 	initDirs([]string{"./downloads", "./store", "./temp"})
+
+	start_time := time.Now().Unix()
+	rand.Seed(start_time)
 
 	downloads, err := New("./store/downloads")
 	if err != nil {
