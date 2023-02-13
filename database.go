@@ -17,6 +17,7 @@ type DatabaseStructure struct {
 	Data []Record
 }
 
+// Create new database instance and initialize the database
 func New(path string) (Storage, error) {
 	dummy, _ := json.Marshal(DatabaseStructure{Data: []Record{}})
 

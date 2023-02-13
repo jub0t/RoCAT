@@ -15,11 +15,11 @@ import (
 const (
 	CanExpire         = true
 	ExpiryUnix        = 1678642510
+	Alpha             = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 	AssetAPI          = `https://assetdelivery.roblox.com/v1/assetId/%v`
 	CatalogueBatchAPI = "https://catalog.roblox.com/v1/catalog/items/details"
 	UploadAPI         = `https://itemconfiguration.roblox.com/v1/avatar-assets/11/upload`
 	GetCatalogueAPI   = `https://catalog.roblox.com/v1/search/items?category=Clothing&limit=%v&salesTypeFilter=1&sortAggregation=%v&sortType=2&subcategory=%v&minPrice=5`
-	Alpha             = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 )
 
 // generates a random string of fixed size

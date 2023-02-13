@@ -4,8 +4,27 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"math/rand"
 	"os"
 	"strings"
+	"time"
+)
+
+var (
+	SeoWords = []string{"Fashion", "Style", "Cute", "Beauty", "Pretty",
+		"Beautiful", "Geek", "Adorable", "Amazing", "Nice", "Chill", "Gorgeous",
+		"Girls", "Girly", "Tomboy", "Design", "Model", "Headphones", "Beats", "Shirt",
+		"Tube Top", "Cami", "Camisole", "Bandeau", "Crop Top", "Flannel", "Plaid", "Sequin",
+		"Jacket", "Pullover", "Cardigan", "Sweatshirt", "Dress", "Denim", "Shortsa", "Leggings",
+		"Jeans", "Skirt", "Pants", "Overalls", "Swimsuit", "Bikini", "Boots", "Combat", "Shoes",
+		"Heels", "Converse", "Uggs", "Vans", "Outfit", "Glam", "Red", "Orange", "Yellow", "Green",
+		"Blue", "Purple", "Brown", "Pink", "Navy", "White", "Rainbow", "Black", "Floral", "Galaxy",
+		"Mustache", "Print", "Fall", "Winter", "Spring", "Summer", "Beach", "Easter", "Christmas",
+		"Thanksgiving", "Halloween", "Princess", "Prince", "Queen", "King", "aerotags: adidas",
+		"nike", "roblox", "anime", "games shirt", "pants", "top", "red", "blue", "yellow", "cool",
+		"rebook", "villain", "pro", "noob", "epic", "long", "hoodie", "purple", "hood", "swear",
+		"gratis", "shoes", "camiseta", "pink", "ice", "police", "original", "baby", "limited", "sweet",
+		"bills", "kawaii", "lion", "emo", "goth", "y2k"}
 )
 
 // Create directories if not exist
@@ -88,17 +107,41 @@ func min(a, b int) int {
 
 // Generate description from name, max length 999
 func generateDesc(name string) []string {
-	var final []string
+	var final []string = SeoWords
 	tokens := strings.Split(name, " ")
 
 	for i := 0; i < len(tokens); i++ {
-
+		final = append(final, tokens[i])
 	}
 
-	return final
+	Shuffle(final)
+
+	return strings.Split(firstN(strings.Join(final, " "), 999), " ")
 }
 
 // Generate random boundary
 func randomBoundary() string {
 	return fmt.Sprintf(`--WebKitFormBoundary%v`, srand(16))
+}
+
+// Change order of the elements in an array
+func Shuffle(slice []string) {
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+
+	for n := len(slice); n > 0; n-- {
+		randIndex := r.Intn(n)
+		slice[n-1], slice[randIndex] = slice[randIndex], slice[n-1]
+	}
+}
+
+// Get first 'n' characters
+func firstN(s string, n int) string {
+	i := 0
+	for j := range s {
+		if i == n {
+			return s[:j]
+		}
+		i++
+	}
+	return s
 }
