@@ -303,10 +303,7 @@ func uploadTemplate(cookie string, name string, creator_id int, creatorType stri
 			req.Header.Set("content-type", fmt.Sprintf(writer.FormDataContentType()))
 			req.Header.Set("cookie", fmt.Sprintf(".ROBLOSECURITY=%v", cookie))
 			req.Header.Set("x-csrf-token", csrf)
-
-			// req.Header.Set("content-length", strconv.Itoa(body.Len()))
-			// req.Header.Set("Referer", `https://www.roblox.com`)
-			// req.Header.Set("origin", `https://create.roblox.com`)
+			req.Header.Set("referer", `https://create.roblox.com`)
 
 			if response, err := http.DefaultClient.Do(req); err != nil {
 				return err
