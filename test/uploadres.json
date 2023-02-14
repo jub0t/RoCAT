@@ -1,9 +1,0 @@
-{
-  "errors": [
-    {
-      "code": 7,
-      "message": "The uploaded file did not contain valid contents for the given asset type",
-      "userFacingMessage": "Something went wrong"
-    }
-  ]
-}

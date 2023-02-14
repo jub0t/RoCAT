@@ -81,3 +81,8 @@ type UploadConfig struct {
 	CreatorTargetId int    `json:"creatorTargetId"`
 	CreatorType     string `json:"creatorType"`
 }
+
+type CaptchaConfig struct {
+	CaptchToken     string `json:"captchToken"`
+	CaptchaProvider string `json:"captchaProvider"`
+}

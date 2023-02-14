@@ -19,12 +19,11 @@ func getClothing(items GetClothesRequest, cookie string) ([]ResponseItems, error
 		return nil, err
 	} else {
 		if req, err := http.NewRequest("POST", CatalogueBatchAPI, bytes.NewReader(body)); err != nil {
-			fmt.Println("Request Agent Error")
 			return nil, err
 		} else {
 			if csrf, err := getCSRF(cookie); err != nil {
 				fmt.Println(`x-csrf-token fetching failed upon getting clothing`)
-				panic(err)
+				return nil, err
 			} else {
 				req.Header.Set("cookie", fmt.Sprintf(`.ROBLOSECURITY=%v`, cookie))
 				req.Header.Set("Content-Type", "application/json")
@@ -36,6 +35,8 @@ func getClothing(items GetClothesRequest, cookie string) ([]ResponseItems, error
 					if body, err := ioutil.ReadAll(response.Body); err != nil {
 						return nil, err
 					} else {
+						fmt.Println(string(body))
+
 						var catalogue GetClothesResponse
 						if err := json.Unmarshal(body, &catalogue); err != nil {
 							return nil, err
@@ -276,11 +277,22 @@ func uploadTemplate(cookie string, name string, creator_id int, creatorType stri
 
 	config, _ := writer.CreatePart(json_body)
 
-	bytes, err := json.Marshal(UploadConfig{
+	captcha_json := textproto.MIMEHeader{}
+	json_body.Set("Content-Type", "application/json")
+	json_body.Set("Content-Disposition", `form-data; name="captcha-token-request"; filename="captcha-token-request.json"`)
+
+	captcha, _ := writer.CreatePart(captcha_json)
+
+	u_bytes, err := json.Marshal(UploadConfig{
 		Name:            name,
 		CreatorTargetId: creator_id,
 		CreatorType:     creatorType,
 		Description:     name,
+	})
+
+	c_bytes, err := json.Marshal(CaptchaConfig{
+		CaptchToken:     "",
+		CaptchaProvider: "",
 	})
 
 	if err != nil {
@@ -288,10 +300,29 @@ func uploadTemplate(cookie string, name string, creator_id int, creatorType stri
 	}
 
 	io.Copy(part, file)
-	config.Write(bytes)
+	config.Write(u_bytes)
+	captcha.Write(c_bytes)
 	writer.Close()
 
 	fmt.Println(body)
+
+	// client := api2captcha.NewClient("YOUR_API_KEY")
+
+	// cap := api2captcha.GeeTest{
+	// 	GT:        "f2ae6cadcf7886856696502e1d55e00c",
+	// 	Challenge: "12345678abc90123d45678ef90123a456b",
+	// 	Url:       "https://mysite.com/captcha.html",
+	// 	ApiServer: "api-na.geetest.com",
+	// }
+
+	// req := cap.ToRequest()
+	// code, err := client.Solve(req)
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Println(code)
+	// }
 
 	if req, err := http.NewRequest("POST", UploadAPI, body); err != nil {
 		return err
@@ -302,8 +333,8 @@ func uploadTemplate(cookie string, name string, creator_id int, creatorType stri
 		} else {
 			req.Header.Set("content-type", fmt.Sprintf(writer.FormDataContentType()))
 			req.Header.Set("cookie", fmt.Sprintf(".ROBLOSECURITY=%v", cookie))
-			req.Header.Set("x-csrf-token", csrf)
 			req.Header.Set("referer", `https://create.roblox.com`)
+			req.Header.Set("x-csrf-token", csrf)
 
 			if response, err := http.DefaultClient.Do(req); err != nil {
 				return err
