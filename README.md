@@ -42,8 +42,8 @@ rocat start --groupId 7830839 --limit 10 --seo
 
 ## Build From Source
 
-- For Linux Run the [Build Bash file](./build.sh)
-- For Windows Run the [Build Batchfile](./build.cmd)
+- For Linux Run the [Build Bash file](./scripts/build.sh)
+- For Windows Run the [Build Batchfile](./scripts/build.cmd)
 
 ### Simple Build & Usage
 
