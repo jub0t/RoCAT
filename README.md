@@ -45,12 +45,20 @@ rocat start --groupId 7830839 --limit 10 --seo
 - For Linux Run the [Build Bash file](./build.sh)
 - For Windows Run the [Build Batchfile](./build.cmd)
 
+### Simple Build & Usage
+
+```sh
+## Init
+go mod tidy
+
+## Run the code directly
+go run main.go
+
+## Build into exe(change name if you are not using windows)
+go build -o ./out.exe
+./out.exe
+```
+
 ## Contribution
 
 This tool is still under development and is not complete. Contributions & pull requests are appreciated.
-
-## Roadmap
-
-- [x] Bulk downloader
-- [ ] Add proxies to upload
-- [ ] Add FunCaptcha solver

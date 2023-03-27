@@ -23,9 +23,11 @@ const (
 // generates a random string of fixed size
 func srand(size int) string {
 	buf := make([]byte, size)
+
 	for i := 0; i < size; i++ {
 		buf[i] = Alpha[rand.Intn(len(Alpha))]
 	}
+
 	return string(buf)
 }
 
@@ -110,6 +112,7 @@ func main() {
 						}
 
 						if cloths, err := getCatalogue(56, 1, 120, cookie); err != nil {
+							fmt.Println("Unable to fetch catalogue")
 							fmt.Println(err)
 						} else {
 							fmt.Println(cloths)
@@ -117,6 +120,7 @@ func main() {
 							if clothes, err := getClothing(GetClothesRequest{
 								Items: cloths,
 							}, cookie); err != nil {
+								fmt.Println("Unable to clothing info")
 								fmt.Println(err)
 							} else {
 								fmt.Println(fmt.Sprintf(`Successfuly fetched asset information for %v clothes`, amount))
