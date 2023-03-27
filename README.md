@@ -52,7 +52,7 @@ rocat start --groupId 7830839 --limit 10 --seo
 go mod tidy
 
 ## Run the code directly
-go run main.go
+go run ./
 
 ## Build into exe(change name if you are not using windows)
 go build -o ./out.exe
