@@ -25,9 +25,11 @@ func getClothing(items GetClothesRequest, cookie string) ([]ResponseItems, error
 				fmt.Println(`x-csrf-token fetching failed upon getting clothing`)
 				return nil, err
 			} else {
-				req.Header.Set("cookie", fmt.Sprintf(`.ROBLOSECURITY=%v`, cookie))
+				cookie = fmt.Sprintf(".ROBLOSECURITY=%s", cookie)
+
 				req.Header.Set("Content-Type", "application/json")
 				req.Header.Set("x-csrf-token", csrf)
+				req.Header.Set("cookie", cookie)
 
 				if response, err := http.DefaultClient.Do(req); err != nil {
 					return nil, err
@@ -35,8 +37,6 @@ func getClothing(items GetClothesRequest, cookie string) ([]ResponseItems, error
 					if body, err := ioutil.ReadAll(response.Body); err != nil {
 						return nil, err
 					} else {
-						fmt.Println(string(body))
-
 						var catalogue GetClothesResponse
 						if err := json.Unmarshal(body, &catalogue); err != nil {
 							return nil, err

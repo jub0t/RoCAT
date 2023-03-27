@@ -115,7 +115,6 @@ func main() {
 							fmt.Println("Unable to fetch catalogue")
 							fmt.Println(err)
 						} else {
-							fmt.Println(cloths)
 							fmt.Println(fmt.Sprintf(`Successfuly fetched %v clothing from the catalogue`, len(cloths)))
 							if clothes, err := getClothing(GetClothesRequest{
 								Items: cloths,
@@ -124,7 +123,6 @@ func main() {
 								fmt.Println(err)
 							} else {
 								fmt.Println(fmt.Sprintf(`Successfuly fetched asset information for %v clothes`, amount))
-								fmt.Println(clothes)
 
 								for i := 0; i < len(clothes); i++ {
 									cloth := clothes[i]
