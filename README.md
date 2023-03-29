@@ -20,6 +20,8 @@ GLOBAL OPTIONS:
    --help, -h  show help
 ```
 
+Download this tool for your OS from the [Releases](https://github.com/jareer12/RoCAT/releases/tag/stable) tab.
+
 ## Usage
 
 When you run the CLI tool for the first time it will create a few new sub-directories, like `store` and `downloads` and `temp`.
