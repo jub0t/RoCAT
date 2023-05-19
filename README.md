@@ -69,4 +69,5 @@ This tool is still under development and is not complete. Contributions & pull r
 
 - Add captcha support
 - Add proxy support
-- Add gruop upload option
+- Add group upload option
+- Fix upload
