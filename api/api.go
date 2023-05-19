@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"bytes"
@@ -10,18 +10,21 @@ import (
 	"net/http"
 	"net/textproto"
 	"os"
+	"rocat/global"
+	"rocat/modules"
+	"rocat/structs"
 	"strings"
 )
 
 // Get Clothing Information
-func getClothing(items GetClothesRequest, cookie string) ([]ResponseItems, error) {
+func GetClothing(items structs.GetClothesRequest, cookie string) ([]structs.ResponseItems, error) {
 	if body, err := json.Marshal(items); err != nil {
 		return nil, err
 	} else {
-		if req, err := http.NewRequest("POST", CatalogueBatchAPI, bytes.NewReader(body)); err != nil {
+		if req, err := http.NewRequest("POST", global.CatalogueBatchAPI, bytes.NewReader(body)); err != nil {
 			return nil, err
 		} else {
-			if csrf, err := getCSRF(cookie); err != nil {
+			if csrf, err := GetCSRF(cookie); err != nil {
 				fmt.Println(`x-csrf-token fetching failed upon getting clothing`)
 				return nil, err
 			} else {
@@ -37,7 +40,7 @@ func getClothing(items GetClothesRequest, cookie string) ([]ResponseItems, error
 					if body, err := ioutil.ReadAll(response.Body); err != nil {
 						return nil, err
 					} else {
-						var catalogue GetClothesResponse
+						var catalogue structs.GetClothesResponse
 						if err := json.Unmarshal(body, &catalogue); err != nil {
 							return nil, err
 						} else {
@@ -50,7 +53,7 @@ func getClothing(items GetClothesRequest, cookie string) ([]ResponseItems, error
 	}
 }
 
-func getCSRF(cookie string) (string, error) {
+func GetCSRF(cookie string) (string, error) {
 	if req, err := http.NewRequest("POST", "https://auth.roblox.com/v2/login", nil); err != nil {
 		return "", err
 	} else {
@@ -69,11 +72,11 @@ func getCSRF(cookie string) (string, error) {
 }
 
 // Get Shirt/Pants from catalogue
-func getCatalogue(sub int, agg int, limit int, cookie string) ([]CatalogueItem, error) {
-	if req, err := http.NewRequest("GET", fmt.Sprintf(GetCatalogueAPI, limit, agg, sub), nil); err != nil {
-		return []CatalogueItem{}, err
+func GetCatalogue(sub int, agg int, limit int, cookie string) ([]structs.CatalogueItem, error) {
+	if req, err := http.NewRequest("GET", fmt.Sprintf(global.GetCatalogueAPI, limit, agg, sub), nil); err != nil {
+		return []structs.CatalogueItem{}, err
 	} else {
-		if csrf, err := getCSRF(cookie); err != nil {
+		if csrf, err := GetCSRF(cookie); err != nil {
 			fmt.Println(`x-csrf-token fetching failed upon getting catalogue`)
 			panic(err)
 		} else {
@@ -84,14 +87,14 @@ func getCatalogue(sub int, agg int, limit int, cookie string) ([]CatalogueItem, 
 			// Send Request
 			if response, err := http.DefaultClient.Do(req); err != nil {
 				fmt.Println(err)
-				return []CatalogueItem{}, err
+				return []structs.CatalogueItem{}, err
 			} else {
 				if body, err := ioutil.ReadAll(response.Body); err != nil {
-					return []CatalogueItem{}, err
+					return []structs.CatalogueItem{}, err
 				} else {
-					var catalogue CatalogueResponse
+					var catalogue structs.CatalogueResponse
 					if err := json.Unmarshal(body, &catalogue); err != nil {
-						return []CatalogueItem{}, err
+						return []structs.CatalogueItem{}, err
 					} else {
 						return catalogue.Data, nil
 					}
@@ -102,8 +105,8 @@ func getCatalogue(sub int, agg int, limit int, cookie string) ([]CatalogueItem, 
 }
 
 // Get the cloth template/source
-func getTemplateId(assetId int) (string, error) {
-	if request, err := http.NewRequest("GET", fmt.Sprintf(AssetAPI, assetId), nil); err != nil {
+func GetTemplateId(assetId int) (string, error) {
+	if request, err := http.NewRequest("GET", fmt.Sprintf(global.AssetAPI, assetId), nil); err != nil {
 		fmt.Println(err)
 	} else {
 		request.Header.Set("Content-Type", "application/json")
@@ -116,7 +119,7 @@ func getTemplateId(assetId int) (string, error) {
 			if body, err := ioutil.ReadAll(response.Body); err != nil {
 				return "", err
 			} else {
-				var asset AssetInfo
+				var asset structs.AssetInfo
 
 				if err := json.Unmarshal(body, &asset); err != nil {
 					return "", err
@@ -152,7 +155,7 @@ func getTemplateId(assetId int) (string, error) {
 // Download template
 // Split from: <div id="current-animation-name"></div>
 // Then from: <div class="equipped-marker"></div>
-func downloadTemplate(link string, path string) error {
+func DownloadTemplate(link string, path string) error {
 	if req, err := http.NewRequest("GET", link, nil); err != nil {
 		return err
 	} else {
@@ -164,7 +167,7 @@ func downloadTemplate(link string, path string) error {
 			if body, err := ioutil.ReadAll(response.Body); err != nil {
 				return err
 			} else {
-				template := resizeTemplate(strings.Replace(strings.Split(strings.Split(strings.Split(strings.Split(string(body), `<div id="current-animation-name"></div>`)[1], `<div class="equipped-marker"></div>`)[0], "src=")[1], "'/>")[0], "'", ``, 1))
+				template := modules.ResizeTemplate(strings.Replace(strings.Split(strings.Split(strings.Split(strings.Split(string(body), `<div id="current-animation-name"></div>`)[1], `<div class="equipped-marker"></div>`)[0], "src=")[1], "'/>")[0], "'", ``, 1))
 
 				if req, err := http.NewRequest("GET", template, nil); err != nil {
 					return err
@@ -194,7 +197,7 @@ func downloadTemplate(link string, path string) error {
 }
 
 // Get User's Balance
-func getBalance(cookie string, csrf string, user_id int) (int, error) {
+func GetBalance(cookie string, csrf string, user_id int) (int, error) {
 	if req, err := http.NewRequest("GET", fmt.Sprintf(`https://economy.roblox.com/v1/users/%v/currency`, user_id), nil); err != nil {
 		fmt.Println("Request Agent Error")
 		return 0, err
@@ -211,7 +214,7 @@ func getBalance(cookie string, csrf string, user_id int) (int, error) {
 			if body, err := ioutil.ReadAll(response.Body); err != nil {
 				return 0, err
 			} else {
-				var resp AccountBalanceResponse
+				var resp structs.AccountBalanceResponse
 
 				if err := json.Unmarshal(body, &resp); err != nil {
 					return 0, err
@@ -224,12 +227,12 @@ func getBalance(cookie string, csrf string, user_id int) (int, error) {
 }
 
 // Get the user's information by cookie
-func getUserInfo(cookie string) (UserInfo, error) {
+func GetUserInfo(cookie string) (structs.UserInfo, error) {
 	if req, err := http.NewRequest("GET", `https://www.roblox.com/mobileapi/userinfo`, nil); err != nil {
 		fmt.Println("Request Agent Error")
-		return UserInfo{}, err
+		return structs.UserInfo{}, err
 	} else {
-		if csrf, err := getCSRF(cookie); err != nil {
+		if csrf, err := GetCSRF(cookie); err != nil {
 			fmt.Println(`x-csrf-token fetching failed upon getting user info`)
 			panic(err)
 		} else {
@@ -238,15 +241,15 @@ func getUserInfo(cookie string) (UserInfo, error) {
 			req.Header.Set("x-csrf-token", csrf)
 
 			if response, err := http.DefaultClient.Do(req); err != nil {
-				return UserInfo{}, err
+				return structs.UserInfo{}, err
 			} else {
 				if body, err := ioutil.ReadAll(response.Body); err != nil {
-					return UserInfo{}, err
+					return structs.UserInfo{}, err
 				} else {
-					var resp UserInfo
+					var resp structs.UserInfo
 
 					if err := json.Unmarshal(body, &resp); err != nil {
-						return UserInfo{}, err
+						return structs.UserInfo{}, err
 					} else {
 						return resp, nil
 					}
@@ -257,13 +260,13 @@ func getUserInfo(cookie string) (UserInfo, error) {
 }
 
 // Upload the template to roblox
-func uploadTemplate(cookie string, name string, creator_id int, creatorType string, location int, price int, use_seo bool) error {
+func UploadTemplate(cookie string, name string, creator_id int, creatorType string, location int, price int, use_seo bool) error {
 	file, _ := os.Open(fmt.Sprintf(`./downloads/%v`, location))
 	defer file.Close()
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
-	writer.SetBoundary(randomBoundary())
+	writer.SetBoundary(modules.RandomBoundary())
 
 	image_body := textproto.MIMEHeader{}
 	image_body.Set("Content-Type", "image/png")
@@ -283,14 +286,14 @@ func uploadTemplate(cookie string, name string, creator_id int, creatorType stri
 
 	captcha, _ := writer.CreatePart(captcha_json)
 
-	u_bytes, err := json.Marshal(UploadConfig{
+	u_bytes, err := json.Marshal(structs.UploadConfig{
 		Name:            name,
 		CreatorTargetId: creator_id,
 		CreatorType:     creatorType,
 		Description:     name,
 	})
 
-	c_bytes, err := json.Marshal(CaptchaConfig{
+	c_bytes, err := json.Marshal(structs.CaptchaConfig{
 		CaptchToken:     "",
 		CaptchaProvider: "",
 	})
@@ -324,10 +327,10 @@ func uploadTemplate(cookie string, name string, creator_id int, creatorType stri
 	// 	fmt.Println(code)
 	// }
 
-	if req, err := http.NewRequest("POST", UploadAPI, body); err != nil {
+	if req, err := http.NewRequest("POST", global.UploadAPI, body); err != nil {
 		return err
 	} else {
-		if csrf, err := getCSRF(cookie); err != nil {
+		if csrf, err := GetCSRF(cookie); err != nil {
 			fmt.Println(`x-csrf-token fetching failed for upload`)
 			panic(err)
 		} else {
@@ -348,6 +351,5 @@ func uploadTemplate(cookie string, name string, creator_id int, creatorType stri
 				}
 			}
 		}
-
 	}
 }

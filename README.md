@@ -64,3 +64,9 @@ go build -o ./out.exe
 ## Contribution
 
 This tool is still under development and is not complete. Contributions & pull requests are appreciated.
+
+## Roadmap
+
+- Add captcha support
+- Add proxy support
+- Add gruop upload option

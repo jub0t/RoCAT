@@ -1,52 +1,46 @@
-package main
+package database
 
 import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"rocat/structs"
 )
 
 // Storage Data
 type Storage struct {
 	Path string
-	Data []Record
+	Data []structs.Record
 }
 
 // This format is used for the data in the disk
 type DatabaseStructure struct {
-	Data []Record
+	Data []structs.Record
 }
 
 // Create new database instance and initialize the database
 func New(path string) (Storage, error) {
-	dummy, _ := json.Marshal(DatabaseStructure{Data: []Record{}})
+	var storage Storage = Storage{
+		Path: path,
+		Data: []structs.Record{},
+	}
+
+	dummy, _ := json.Marshal(DatabaseStructure{Data: []structs.Record{}})
 	if bytes, err := os.ReadFile(path); err != nil {
 		if err := os.WriteFile(path, []byte(dummy), os.ModePerm); err != nil {
 			fmt.Println(err)
-			return Storage{
-				Path: path,
-				Data: []Record{},
-			}, err
+			return storage, err
 		} else {
-			return Storage{
-				Path: path,
-				Data: []Record{},
-			}, nil
+			return storage, nil
 		}
 	} else {
 		var json_data DatabaseStructure
 		if err := json.Unmarshal(bytes, &json_data); err != nil {
 			if err := os.WriteFile(path, []byte(dummy), os.ModePerm); err != nil {
 				fmt.Println(err)
-				return Storage{
-					Path: path,
-					Data: []Record{},
-				}, err
+				return storage, err
 			} else {
-				return Storage{
-					Path: path,
-					Data: []Record{},
-				}, nil
+				return storage, nil
 			}
 		} else {
 			return Storage{
@@ -58,7 +52,7 @@ func New(path string) (Storage, error) {
 }
 
 // Save A Record To Database
-func (x *Storage) SaveRecord(record Record) {
+func (x *Storage) SaveRecord(record structs.Record) {
 	x.Data = append(x.Data, record)
 
 	if err := SaveToDisk(x); err != nil {
@@ -67,12 +61,12 @@ func (x *Storage) SaveRecord(record Record) {
 }
 
 // Get all records in the database
-func (x *Storage) GetAll() []Record {
+func (x *Storage) GetAll() []structs.Record {
 	return x.Data
 }
 
 // Get Record By Id
-func (x *Storage) GetRecord(id int) Record {
+func (x *Storage) GetRecord(id int) structs.Record {
 	for i := 0; i < len(x.Data); i++ {
 		record := x.Data[i]
 
@@ -81,7 +75,7 @@ func (x *Storage) GetRecord(id int) Record {
 		}
 	}
 
-	return Record{}
+	return structs.Record{}
 }
 
 // Get all records with the given name

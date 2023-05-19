@@ -1,4 +1,4 @@
-package main
+package modules
 
 import (
 	"errors"
@@ -6,11 +6,14 @@ import (
 	"io/fs"
 	"math/rand"
 	"os"
+	"rocat/structs"
+	_ "rocat/structs"
 	"strings"
 	"time"
 )
 
 var (
+	Alpha    = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 	SeoWords = []string{"Fashion", "Style", "Cute", "Beauty", "Pretty",
 		"Beautiful", "Geek", "Adorable", "Amazing", "Nice", "Chill", "Gorgeous",
 		"Girls", "Girly", "Tomboy", "Design", "Model", "Headphones", "Beats", "Shirt",
@@ -28,7 +31,7 @@ var (
 )
 
 // Create directories if not exist
-func initDirs(paths []string) {
+func InitDirs(paths []string) {
 	for i := 0; i < len(paths); i++ {
 		path := paths[i]
 
@@ -42,7 +45,7 @@ func initDirs(paths []string) {
 }
 
 // Create files if not exist
-func initFiles(files []string) {
+func InitFiles(files []string) {
 	for i := 0; i < len(files); i++ {
 		file := files[i]
 
@@ -58,13 +61,13 @@ func initFiles(files []string) {
 }
 
 // The clothing size is 420, we resize it to 512 without losing quality
-func resizeTemplate(link string) string {
+func ResizeTemplate(link string) string {
 	fmt.Println(link)
 	return fmt.Sprintf("https://tr.rbxcdn.com/%v/512/512/Image/Png", strings.Split(strings.Split(link, "https://tr.rbxcdn.com/")[1], "/")[0])
 }
 
 // Return only the names of fs dirs
-func entriesToNames(entries []fs.DirEntry) []string {
+func EntriesToNames(entries []fs.DirEntry) []string {
 	var x []string
 
 	for i := 0; i < len(entries); i++ {
@@ -74,7 +77,7 @@ func entriesToNames(entries []fs.DirEntry) []string {
 	return x
 }
 
-func contains(s []string, e any) bool {
+func Contains(s []string, e any) bool {
 	for _, a := range s {
 		if a == e {
 			return true
@@ -84,13 +87,13 @@ func contains(s []string, e any) bool {
 }
 
 // Map a slice and only return clothes that have not been uploaded already.
-func cleanTemplates(files []string, records []Record) []Record {
-	var c []Record
+func CleanTemplates(files []string, records []structs.Record) []structs.Record {
+	var c []structs.Record
 
 	for i := 0; i < len(records); i++ {
 		record := records[i]
 
-		if !(contains(files, record)) {
+		if !(Contains(files, record)) {
 			c = append(c, record)
 		}
 	}
@@ -99,7 +102,7 @@ func cleanTemplates(files []string, records []Record) []Record {
 }
 
 // Get smallest between 2 integers
-func min(a, b int) int {
+func Min(a, b int) int {
 	if a < b {
 		return a
 	}
@@ -107,7 +110,7 @@ func min(a, b int) int {
 }
 
 // Generate description from name, max length 999
-func generateDesc(name string) []string {
+func GenerateDesc(name string) []string {
 	var final []string = SeoWords
 	tokens := strings.Split(name, " ")
 
@@ -117,11 +120,22 @@ func generateDesc(name string) []string {
 
 	Shuffle(final)
 
-	return strings.Split(firstN(strings.Join(final, " "), 999), " ")
+	return strings.Split(FirstN(strings.Join(final, " "), 999), " ")
+}
+
+// generates a random string of fixed size
+func srand(size int) string {
+	buf := make([]byte, size)
+
+	for i := 0; i < size; i++ {
+		buf[i] = Alpha[rand.Intn(len(Alpha))]
+	}
+
+	return string(buf)
 }
 
 // Generate random boundary
-func randomBoundary() string {
+func RandomBoundary() string {
 	return fmt.Sprintf(`----WebKitFormBoundary%v`, srand(16))
 }
 
@@ -136,7 +150,7 @@ func Shuffle(slice []string) {
 }
 
 // Get first 'n' characters
-func firstN(s string, n int) string {
+func FirstN(s string, n int) string {
 	i := 0
 	for j := range s {
 		if i == n {

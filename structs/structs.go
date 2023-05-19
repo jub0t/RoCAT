@@ -1,4 +1,4 @@
-package main
+package structs
 
 type ResponseItems struct {
 	Id                      int      `json:"id"`
