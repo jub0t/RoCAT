@@ -45,7 +45,7 @@ func main() {
 					Name:  "info",
 					Usage: "Display information about the cli.",
 					Action: func(cCtx *cli.Context) error {
-						// Database & Downloaded info
+						handlers.Info(cCtx)
 						return nil
 					},
 				},
