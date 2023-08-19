@@ -13,7 +13,7 @@ COMMANDS:
    info      Display information about the cli.
    whoami    Uses your cookie from the file and fetches account/bot info.
    download  Download classic clothing from roblox catalogue and save them for later upload
-   start     Start uploading the stored clothing.
+   upload    Start uploading the stored clothing.
    help, h   Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -39,7 +39,7 @@ rocat download --amount 120 --type shirts
 Now you can upload the stored clothing to the website, the cli will keep track of the uploaded clothing, and will not re-upload clothing. Use the `--seo` flag to allow the cli to generate descriptions using an algorithm, better description can lead to more sales.
 
 ```
-rocat start --groupId 7830839 --limit 10 --seo
+rocat upload --groupId 7830839 --limit 10 --seo
 ```
 
 ## Build From Source
