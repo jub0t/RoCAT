@@ -169,6 +169,10 @@ func DownloadTemplate(link string, path string) error {
 			} else {
 				template := modules.ResizeTemplate(strings.Replace(strings.Split(strings.Split(strings.Split(strings.Split(string(body), `<div id="current-animation-name"></div>`)[1], `<div class="equipped-marker"></div>`)[0], "src=")[1], "'/>")[0], "'", ``, 1))
 
+				if len(template) <= 0 {
+					return nil
+				}
+
 				if req, err := http.NewRequest("GET", template, nil); err != nil {
 					return err
 				} else {

@@ -62,7 +62,12 @@ func InitFiles(files []string) {
 
 // The clothing size is 420, we resize it to 512 without losing quality
 func ResizeTemplate(link string) string {
-	return fmt.Sprintf("https://tr.rbxcdn.com/%v/512/512/Image/Png", strings.Split(strings.Split(link, "https://tr.rbxcdn.com/")[1], "/")[0])
+	splits := strings.Split(link, "https://tr.rbxcdn.com/")
+	if len(splits) > 0 {
+		return fmt.Sprintf("https://tr.rbxcdn.com/%v/512/512/Image/Png", strings.Split(splits[1], "/")[0])
+	} else {
+		return ""
+	}
 }
 
 // Return only the names of fs dirs
