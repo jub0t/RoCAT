@@ -37,7 +37,7 @@ func Download(cCtx *cli.Context, cookie string, downloads database.Storage) erro
 		} else {
 			fmt.Println(fmt.Sprintf(`Successfuly fetched asset information for %v clothes`, amount))
 
-			for i := 0; i < len(clothes); i++ {
+			for i := 0; i < len(cloths); i++ {
 				cloth := clothes[i]
 
 				if i >= int(amount) {
